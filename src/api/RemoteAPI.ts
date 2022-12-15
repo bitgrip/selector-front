@@ -4,6 +4,7 @@ import { env } from '$env/dynamic/public';
 const apiRequest = async (method: RequestInit['method'], path: string, payload?: unknown) => {
 	const baseUrl = env.PUBLIC_BASE_URL?.replace(/\/+$/, '') || '';
 	const url = `${baseUrl}${path}`;
+	console.info("RemoteAPI.Request", baseUrl, path, url)
 	const response = await fetch(url, {
 		method,
 		body: payload !== undefined ? JSON.stringify(payload) : undefined,
