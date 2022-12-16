@@ -13,5 +13,5 @@ export async function DELETE({ params: {itemId} }) {
 
 /** @type {import('./$types').RequestHandler} */
 export async function PATCH({ request, params: { itemId } }) {
-	return serializeToResponse(await RemoteApiItems.updateItem(itemId, request.json()));
+	return serializeToResponse(await RemoteApiItems.updateItem(itemId, await request.json()));
 }
