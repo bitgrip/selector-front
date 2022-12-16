@@ -45,17 +45,17 @@ pipeline {
                 }
             }
         }
-        // stage('Deploy') {
-        //     steps {
-        //         build(
-        //             quietPeriod: 0,
-        //             job: 'bitgrip-infrastructure/bitgrip-operations/main',
-        //             parameters: [
-        //                 string(name: 'PLAYBOOK', value: 'deploy-selector'),
-        //                 string(name: 'EXTRA_VARS', value: '')
-        //             ]
-        //         )
-        //     }
-        // }
+        stage('Deploy') {
+            steps {
+                build(
+                    quietPeriod: 0,
+                    job: 'bitgrip-infrastructure/bitgrip-operations/main',
+                    parameters: [
+                        string(name: 'PLAYBOOK', value: 'deploy-selector'),
+                        string(name: 'EXTRA_VARS', value: '')
+                    ]
+                )
+            }
+        }
     }
 }
