@@ -1,5 +1,5 @@
-<script lang="typescript">
-	import ItemsList from '../components/items/itemsList.svelte';
+<script lang="ts">
+	import ItemsList from 'components/items/itemsList.svelte';
 </script>
 
 <svelte:head>

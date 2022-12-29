@@ -5,10 +5,15 @@ const apiRequest = async (method: RequestInit['method'], path: string, payload?:
 		body: payload !== undefined ? JSON.stringify(payload) : undefined,
 		headers: payload !== undefined ? { 'Content-Type': 'application/json' } : undefined
 	});
+	console.log('ClientApi', response);
 	if (response.ok) {
-		return await response.json();
+		try {
+			return await response.json();
+		} catch (error) {
+			console.error(error);
+		}
 	} else {
-		throw new Error(response.statusText);
+		console.error(response.statusText);
 	}
 };
 

@@ -11,7 +11,11 @@ const apiRequest = async (method: RequestInit['method'], path: string, payload?:
 		headers: payload !== undefined ? { 'Content-Type': 'application/json' } : undefined
 	});
 	if (response.ok) {
-		return await response.json();
+		try {
+			return await response.json();
+		} catch (error) {
+			console.error(error);
+		}
 	} else {
 		throw new Error(response.statusText);
 	}

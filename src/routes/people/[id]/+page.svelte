@@ -1,32 +1,26 @@
-<script>
-	export let data;
-	import PersonDetail from '../../../components/personDetail.svelte';
+<script lang="ts">
+	import PersonDetail from 'components/people/personDetail.svelte';
 	import { onMount } from 'svelte';
-	import { getAllEventsForPerson } from '../../../components/people/peopleHandlerFunctions';
-	import { getActiveEvents, getEventsWithFutureDates } from '../../../utils/date';
-	import Loader from '../../../components/general/Loader.svelte';
-	import Error from '../../../components/general/Error.svelte';
+	import { getActiveEvents, getEventsWithFutureDates } from 'utils/date';
+	import Load from 'components/general/Load.svelte';
+	import Error from 'components/general/Error.svelte';
+	import { LocalApiPeople } from '$lib/apiClient/people';
+	import type { Person } from '$lib/types/person';
+	import type { Event } from '$lib/types/event';
 
-	export let person;
+	export let data: Person;
 	let isLoading = true;
-	let allAttendedEvents = [];
-	let futureEvents = [];
-	let runningEvents = [];
+	let allAttendedEvents: Array<Event> = [];
+	let futureEvents: Array<Event> = [];
+	let runningEvents: Array<Event> = [];
 
 	let invalidPerson = false;
 
-	console.log(data);
-
 	onMount(async () => {
 		if (data._id) {
-			allAttendedEvents = await getAllEventsForPerson(data._id);
-
+			allAttendedEvents = await LocalApiPeople.getAllPersonEvents(data._id);
 			futureEvents = getEventsWithFutureDates(allAttendedEvents);
 			runningEvents = getActiveEvents(allAttendedEvents);
-			console.log('future events');
-			console.log(futureEvents);
-			console.log('running events');
-			console.log(runningEvents);
 			isLoading = false;
 		} else {
 			invalidPerson = true;
@@ -36,7 +30,7 @@
 </script>
 
 {#if isLoading}
-	<Loader />
+	<Load />
 {:else if invalidPerson}
 	<Error
 		>Uh no. This person doesnt exist.

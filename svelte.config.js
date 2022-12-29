@@ -11,6 +11,11 @@ const config = {
 		adapter: adapter(),
 		files: {
 			lib: 'src/lib'
+		},
+		alias: {
+			components: 'src/lib/components',
+			utils: 'src/utils',
+			api: 'src/api'
 		}
 	}
 };

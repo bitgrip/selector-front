@@ -1,16 +1,30 @@
-<script>
+<script lang="ts">
 	import { onMount } from 'svelte';
-	import { createGroup, deleteGroup, getAllGroups, updateGroups } from './../../api/groups';
-	import Modal from '../../components/general/Modal.svelte';
+	import Modal from 'components/general/Modal.svelte';
 	import { faPlus } from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
-	import GroupCard from '../../components/groups/GroupCard.svelte';
-	import GroupForm from '../../components/forms/groupForm.svelte';
-	import DangerZoneConfirmDeleteAction from '../../components/general/DangerZoneConfirmDeleteAction.svelte';
-	import Loader from '../../components/general/Loader.svelte';
+	import GroupCard from 'components/groups/GroupCard.svelte';
+	import GroupForm from 'components/forms/groupForm.svelte';
+	import DangerZoneConfirmDeleteAction from 'components/general/DangerZoneConfirmDeleteAction.svelte';
+	import Load from 'components/general/Load.svelte';
+	import { LocalApiGroups } from '$lib/apiClient/groups';
+	import type { Group } from '$lib/types/group';
 
-	let groups = [];
+	let groups: Array<Group> = [];
 	let isLoading = true;
+
+	let groupToBeDeleted: Group = {
+		_id: '',
+		name: '',
+		description: '',
+		items: []
+	};
+	let groupToBeEdited: Group = {
+		_id: '',
+		name: '',
+		description: '',
+		items: []
+	};
 
 	onMount(async () => {
 		await fetchAllGroups();
@@ -18,18 +32,18 @@
 	});
 
 	const fetchAllGroups = async () => {
-		const res = await getAllGroups();
+		const res = await LocalApiGroups.getAllGroups();
 		groups = res;
 	};
 
-	const handleDeleteGroup = async (groupId) => {
-		const res = await deleteGroup(groupId);
+	const handleDeleteGroup = async (groupId: Group['_id']) => {
+		const res = await LocalApiGroups.deleteGroup(groupId);
 		fetchAllGroups();
 		showDeleteModal = false;
 	};
 
-	const handleCreateNewGroup = async (event) => {
-		const res = await createGroup({
+	const handleCreateNewGroup = async (event: CustomEvent<Group>) => {
+		const res = await LocalApiGroups.createGroup({
 			name: event.detail.name,
 			description: event.detail.description
 		});
@@ -37,19 +51,16 @@
 		fetchAllGroups();
 	};
 
-	const handleEditGroup = async (event) => {
-		const res = await updateGroups(groupToBeEdited._id, event.detail);
+	const handleEditGroup = async (event: CustomEvent<Group>) => {
+		const res = await LocalApiGroups.updateGroup(groupToBeEdited._id, event.detail);
 		fetchAllGroups();
 		letShowEditModal = false;
 	};
 
-	const triggeredDeleteGroup = async (event) => {
-		groupToBeDeleted = event.detail.group;
+	const triggeredDeleteGroup = async (event: CustomEvent<Group>) => {
+		groupToBeDeleted = event.detail;
 		showDeleteModal = true;
 	};
-
-	let groupToBeDeleted = {};
-	let groupToBeEdited = {};
 
 	let showDeleteModal = false;
 	let letShowCreateModal = false;
@@ -68,7 +79,7 @@
 </div>
 
 {#if isLoading}
-	<Loader />
+	<Load />
 {:else}
 	<div class="flex flex-wrap gap-9 ">
 		{#each groups as group}
@@ -78,7 +89,7 @@
 					on:delete={triggeredDeleteGroup}
 					on:edit={(event) => {
 						letShowEditModal = true;
-						groupToBeEdited = event.detail.group;
+						groupToBeEdited = event.detail;
 					}}
 				/>
 			</div>

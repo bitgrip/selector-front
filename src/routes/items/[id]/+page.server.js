@@ -1,4 +1,4 @@
-import { RemoteApiItems } from './../../../api/item';
+import { RemoteApiItems } from '../../../api/item';
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load({ params }) {

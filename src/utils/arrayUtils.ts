@@ -8,6 +8,14 @@ export const findByKeyInArray = (key, keyValue, array) => {
 	return -1;
 };
 
+export const findKeyPositionInArray = (arr, key, value) => {
+	return arr.findIndex((element) => {
+		if (element[key] == value) {
+			return true;
+		}
+	});
+};
+
 export const findIndexByKeyInArray = (key, keyValue, array) => {
 	for (var i = 0; i < array.length; i++) {
 		if (array[i][key] === keyValue) {

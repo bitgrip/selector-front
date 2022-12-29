@@ -1,70 +1,73 @@
-<script>
-	import { createPerson, deletePerson, getAllPeople, updatePerson } from '../../api/people';
-	import { onMount } from 'svelte';
-	import PersonCard from '../../components/personCard.svelte';
-	import Modal from '../../components/general/Modal.svelte';
-	import PersonForm from '../../components/forms/personForm.svelte';
-	import ConfirmDeleteAction from '../../components/general/DangerZoneConfirmDeleteAction.svelte';
-	import { faPlus } from '@fortawesome/free-solid-svg-icons';
+<script lang="ts">
 	import Fa from 'svelte-fa';
-	import { getAllGroups } from '../../api/groups';
-	import Loader from '../../components/general/Loader.svelte';
+	import { faPlus } from '@fortawesome/free-solid-svg-icons';
+	import { onMount } from 'svelte';
+	import PersonCard from 'components/people/personCard.svelte';
+	import PersonForm from 'components/forms/personForm.svelte';
+	import ConfirmDeleteAction from 'components/general/DangerZoneConfirmDeleteAction.svelte';
+	import Load from 'components/general/Load.svelte';
+	import Modal from 'components/general/Modal.svelte';
 	import { LocalApiItems } from '$lib/apiClient/items';
+	import { LocalApiPeople } from '$lib/apiClient/people';
+	import { LocalApiGroups } from '$lib/apiClient/groups';
+	import type { Person } from '$lib/types/person';
+	import type { Item } from '$lib/types/item';
+	import type { Group } from '$lib/types/group';
 
-	let people = [];
-
-	let allItems = [];
-	let allGroupes = [];
-
-	let isLoading = true;
-
-	onMount(async () => {
-		await fetchAllPeople();
-		allItems = await LocalApiItems.getAllItems();
-		allGroupes = await getAllGroups();
-		isLoading = false;
-	});
-
-	const fetchAllPeople = async () => {
-		const res = await getAllPeople();
-		people = res;
-	};
-
-	const handleCreateNewPerson = async (event) => {
-		console.log(event.detail);
-		const res = await createPerson({
-			name: event.detail.name,
-			itemsCanBeAttended: event.detail.itemsCanBeAttended,
-			groupes: event.detail.groupes,
-			active: event.detail.active
-		});
-		letShowCreateModal = false;
-		fetchAllPeople();
-	};
-
-	const handleDeletePerson = async (personId) => {
-		const res = await deletePerson(personId);
-		fetchAllPeople();
-		showDeleteModal = false;
-	};
-
-	const handleEditPerson = async (event) => {
-		const res = await updatePerson(personToBeEdited._id, event.detail);
-		fetchAllPeople();
-		letShowEditModal = false;
-	};
-
-	let personToBeDeleted = {};
-	const triggeredDeletePerson = (event) => {
-		personToBeDeleted = event.detail.person;
-		showDeleteModal = true;
-	};
-
-	let personToBeEdited = {};
+	let people: Array<Person> = [];
+	let allItems: Array<Item> = [];
+	let allGroupes: Array<Group> = [];
 
 	let showDeleteModal = false;
 	let letShowCreateModal = false;
 	let letShowEditModal = false;
+
+	let isLoading = true;
+
+	let personToBeEdited: Person = {
+		_id: '',
+		active: false,
+		name: ''
+	};
+	let personToBeDeleted: Person = {
+		_id: '',
+		active: false,
+		name: ''
+	};
+
+	onMount(async () => {
+		await fetchAllPeople();
+		allItems = await LocalApiItems.getAllItems();
+		allGroupes = await LocalApiGroups.getAllGroups();
+		isLoading = false;
+	});
+
+	const fetchAllPeople = async () => {
+		people = await LocalApiPeople.getAllPeople();
+	};
+
+	const handleCreateNewPerson = async (event: CustomEvent<Person>) => {
+		await LocalApiPeople.createPerson(event.detail);
+		fetchAllPeople();
+		letShowCreateModal = false;
+	};
+
+	const handleDeletePerson = async (personId: string) => {
+		await LocalApiPeople.deletePerson(personId);
+		fetchAllPeople();
+		showDeleteModal = false;
+	};
+
+	const handleEditPerson = async (event: CustomEvent<Person>) => {
+		await LocalApiPeople.updatePerson(personToBeEdited._id, event.detail);
+		fetchAllPeople();
+		letShowEditModal = false;
+	};
+
+	const triggeredDeletePerson = (event: CustomEvent<Person>) => {
+		personToBeDeleted = event.detail;
+		showDeleteModal = true;
+	};
 </script>
 
 {#if showDeleteModal}
@@ -98,7 +101,7 @@
 	>
 </div>
 {#if isLoading}
-	<Loader />
+	<Load />
 {:else}
 	<div class="flex flex-wrap gap-9 ">
 		{#each people as person}
@@ -108,7 +111,7 @@
 					on:onDelete={triggeredDeletePerson}
 					on:onEdit={(event) => {
 						letShowEditModal = true;
-						personToBeEdited = event.detail.person;
+						personToBeEdited = event.detail;
 					}}
 				/>
 			</div>

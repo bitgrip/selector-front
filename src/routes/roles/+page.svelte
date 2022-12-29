@@ -1,61 +1,67 @@
-<script>
+<script lang="ts">
 	import { onMount } from 'svelte';
-	import { createRole, deleteRole, getAllRoles, updateRole } from './../../api/roles';
-	import Modal from '../../components/general/Modal.svelte';
-	import RoleForm from '../../components/forms/roleForm.svelte';
+	import Modal from 'components/general/Modal.svelte';
+	import RoleForm from 'components/forms/roleForm.svelte';
 	import { faPlus } from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
-	import RoleCard from '../../components/roles/RoleCard.svelte';
-	import DangerZoneConfirmDeleteAction from '../../components/general/DangerZoneConfirmDeleteAction.svelte';
-	import Loader from '../../components/general/Loader.svelte';
+	import RoleCard from 'components/roles/RoleCard.svelte';
+	import DangerZoneConfirmDeleteAction from 'components/general/DangerZoneConfirmDeleteAction.svelte';
+	import Load from 'components/general/Load.svelte';
+	import { LocalApiRoles } from '$lib/apiClient/roles';
+	import type { Role } from '$lib/types/role';
 
-	let roles = [];
+	let roles: Array<Role> = [];
+
+	let roleToBeDeleted: Role = {
+		_id: '',
+		description: '',
+		name: '',
+		icon: ''
+	};
+	let roleToBeEdited: Role = {
+		_id: '',
+		description: '',
+		name: '',
+		icon: ''
+	};
+
+	let showDeleteModal = false;
+	let letShowCreateModal = false;
+	let letShowEditModal = false;
 
 	let isLoading = true;
+
 	onMount(async () => {
 		await fetchAllRoles();
 		isLoading = false;
 	});
 
 	const fetchAllRoles = async () => {
-		const res = await getAllRoles();
-		roles = res;
-		console.log(roles);
+		roles = await LocalApiRoles.getAllRoles();
 	};
 
-	const handleCreateNewRole = async (event) => {
-		const res = await createRole({
-			name: event.detail.name,
-			description: event.detail.description,
-			icon: event.detail.icon
-		});
+	const handleCreateNewRole = async (event: CustomEvent<Role>) => {
+		await LocalApiRoles.createRole(event.detail);
 		letShowCreateModal = false;
 		fetchAllRoles();
 	};
 
-	const handleDeleteRole = async (roleId) => {
-		const res = await deleteRole(roleId);
+	const handleDeleteRole = async (roleId: Role['_id']) => {
+		await LocalApiRoles.deleteRole(roleId);
 		fetchAllRoles();
 		showDeleteModal = false;
 	};
 
-	const handleEditRole = async (event) => {
-		const res = await updateRole(roleToBeEdited._id, event.detail);
+	const handleEditRole = async (event: CustomEvent<Role>) => {
+		await LocalApiRoles.updateRole(roleToBeEdited._id, event.detail);
 		fetchAllRoles();
 		letShowEditModal = false;
 	};
 
-	const triggeredDeleteRole = async (event) => {
-		roleToBeDeleted = event.detail.role;
+	const triggeredDeleteRole = async (event: CustomEvent<Role>) => {
+		roleToBeDeleted = event.detail;
 		showDeleteModal = true;
 	};
-
-	let roleToBeDeleted = {};
-	let roleToBeEdited = {};
-
-	let showDeleteModal = false;
-	let letShowCreateModal = false;
-	let letShowEditModal = false;
 </script>
 
 <div class="header prose">
@@ -70,7 +76,7 @@
 </div>
 
 {#if isLoading}
-	<Loader />
+	<Load />
 {:else}
 	<div class="grid grid-cols-3 gap-5">
 		{#each roles as role}
@@ -80,8 +86,7 @@
 					on:delete={triggeredDeleteRole}
 					on:edit={(event) => {
 						letShowEditModal = true;
-						roleToBeEdited = event.detail.role;
-						console.log(roleToBeEdited);
+						roleToBeEdited = event.detail;
 					}}
 				/>
 			</div>
