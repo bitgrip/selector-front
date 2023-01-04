@@ -9,7 +9,8 @@
 	export let group: Group = {
 		_id: '',
 		name: '',
-		description: ''
+		description: '',
+		items: []
 	};
 
 	function close() {
@@ -17,39 +18,61 @@
 	}
 
 	function onSubmit() {
+		if (!group.name) {
+			nameInputIsMissing = true;
+		}
+		if (!group.description) {
+			descriptionInputIsMissing = true;
+		}
+		if (nameInputIsMissing || descriptionInputIsMissing) {
+			return;
+		}
+
 		dispatch('submit', {
 			_id: group._id || '',
 			name: group.name,
-			description: group.description
+			description: group.description,
+			items: []
 		});
 	}
 
-	export let title = '';
+	let nameInputIsMissing = false;
+	let descriptionInputIsMissing = false;
 </script>
 
-<h1>{title}</h1>
-<TextInput
-	inputLabel={'Name'}
-	inputPlaceholder="Name"
-	bind:textValue={group.name}
-	class="input-accent"
-/>
-<TextField
-	inputLabel={'Description'}
-	inputPlaceholder="Write the description here"
-	bind:textValue={group.description}
-/>
+<div class="p-4">
+	<slot name="title" />
+	<form id="groupForm" class="mt-4" on:submit|preventDefault={onSubmit}>
+		<TextInput
+			isRequired={true}
+			inputLabel={'Name'}
+			inputPlaceholder="Name"
+			bind:textValue={group.name}
+			class={`${nameInputIsMissing ? 'input-error' : 'input-primary'}`}
+			on:onUserInteraction={() => {
+				nameInputIsMissing = false;
+			}}
+		/>
+		<TextField
+			isRequired={true}
+			inputLabel={'Description'}
+			inputPlaceholder="Write the description here"
+			bind:textValue={group.description}
+			on:onUserInteraction={() => {
+				descriptionInputIsMissing = false;
+			}}
+			class={`${nameInputIsMissing ? 'textarea-error' : 'textarea-primary'}`}
+		/>
 
-<div>
-	<button
-		class="btn btn-outline btn-error"
-		type="button"
-		on:click={() => {
-			close();
-		}}>Close</button
-	>
-	<button type="button" class="btn btn-outline btn-info" on:click={onSubmit}>Save</button>
+		<div class="mt-4 flex justify-between">
+			<button
+				class="btn btn-outline btn-error"
+				type="button"
+				on:click={() => {
+					close();
+				}}>Close</button
+			>
+			<button type="submit" class="btn btn-outline btn-info">Save</button>
+		</div>
+	</form>
 </div>
-
-<style>
-</style>

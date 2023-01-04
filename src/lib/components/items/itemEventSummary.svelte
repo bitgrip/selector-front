@@ -15,12 +15,12 @@
 	});
 </script>
 
-<EventGroupOverview runningEvent={true} eventArray={runningEvents}>
-	<svelte:fragment slot="title">Events running</svelte:fragment>
-	<p slot="noEventsText">No running events!</p>
-</EventGroupOverview>
+<div class="flex flex-wrap ">
+	<EventGroupOverview runningEvent={true} eventArray={runningEvents}>
+		<svelte:fragment slot="title">Events running</svelte:fragment>
+	</EventGroupOverview>
 
-<EventGroupOverview futureEvent={true} eventArray={futureEvents}>
-	<svelte:fragment slot="title">Comming up...</svelte:fragment>
-	<p slot="noEventsText">No comming up event, maybe define one?</p>
-</EventGroupOverview>
+	<EventGroupOverview futureEvent={true} eventArray={futureEvents}>
+		<svelte:fragment slot="title">Comming up...</svelte:fragment>
+	</EventGroupOverview>
+</div>

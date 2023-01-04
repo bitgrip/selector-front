@@ -38,6 +38,7 @@
 		description: ''
 	};
 
+	console.log(peopleToSelectFrom);
 	let selectedParticipantsIds: Array<{
 		role: string;
 		person: string;
@@ -65,27 +66,47 @@
 		participants: selectedParticipantsIds
 	};
 
+	let startDateMissing = false;
+	let endDateMissing = false;
+
 	const dispatch = createEventDispatcher<{ submit: EventRequestType; close: void }>();
 
 	function close() {
 		dispatch('close');
 	}
 
-	function submit() {
+	function onSubmit() {
+		console.log(startDate);
+		console.log(endDate);
+
+		if (!startDate || startDate == 'Invalid Date') {
+			startDateMissing = true;
+		}
+
+		if (!endDate && item.isLongerThenOneDay == true) {
+			endDateMissing = true;
+		}
+
+		if (startDateMissing || endDateMissing) {
+			return;
+		}
+
 		formEvent.startDate = dayjs(startDate)
 			.set('hour', 7)
 			.set('minute', 0)
 			.set('second', 0)
 			.toDate()
 			.toISOString();
-		formEvent.endDate = dayjs(endDate)
-			.set('hour', 18)
-			.set('minute', 0)
-			.set('second', 0)
-			.toDate()
-			.toISOString();
+		if (item.isLongerThenOneDay) {
+			formEvent.endDate = dayjs(endDate)
+				.set('hour', 18)
+				.set('minute', 0)
+				.set('second', 0)
+				.toDate()
+				.toISOString();
+		}
 		formEvent.participants = selectedParticipantsIds;
-		formEvent._id = event._id || undefined;
+		formEvent._id = event._id || '';
 
 		dispatch('submit', {
 			...formEvent
@@ -111,53 +132,54 @@
 	}
 </script>
 
-<h1>{title}</h1>
+<div class="p-4">
+	<h1>{title}</h1>
 
-<div class="item">
-	Start Date
-	<DateInput bind:date={startDate} />
-</div>
+	<form id="itemForm" class="mt-4" on:submit|preventDefault={onSubmit}>
+		<DateInput
+			isRequired={true}
+			inputLabel="Start date"
+			class={`${startDateMissing ? 'input-error' : 'input-primary'}`}
+			bind:date={startDate}
+			on:onUserInteraction={() => {
+				startDateMissing = false;
+			}}
+		/>
 
-{#if item.isLongerThenOneDay}
-	<div class="item">
-		End Date
-		<DateInput bind:date={endDate} />
-	</div>
-{/if}
-
-{#if item.roles}
-	{#each item.roles as role, i}
-		<div class="item">
-			{role.name}
-			<SelectDropdown
-				items={peopleToSelectFrom}
-				placeholder={'Select..'}
-				value={getNameForRoleId(role._id)}
-				on:dropdownSelect={(e) => handleSelect(e, role._id)}
+		{#if item.isLongerThenOneDay}
+			<DateInput
+				isRequired={true}
+				inputLabel="End date"
+				class={`${endDateMissing ? 'input-error' : 'input-primary'}`}
+				bind:date={endDate}
+				on:onUserInteraction={() => {
+					endDateMissing = false;
+				}}
 			/>
+		{/if}
+
+		{#if item.roles}
+			{#each item.roles as role, i}
+				<div class="m-1">
+					<span class="label-text"> {role.name}</span>
+					<SelectDropdown
+						items={peopleToSelectFrom}
+						placeholder={`Select ${role.name.toLowerCase()}`}
+						value={getNameForRoleId(role._id)}
+						on:dropdownSelect={(e) => handleSelect(e, role._id)}
+					/>
+				</div>
+			{/each}
+		{/if}
+		<div class="mt-4 flex justify-between">
+			<button
+				class="btn btn-outline btn-error"
+				type="button"
+				on:click={() => {
+					close();
+				}}>Close</button
+			>
+			<button type="submit" class="btn btn-outline btn-accent">Save</button>
 		</div>
-	{/each}
-{/if}
-<div class="button-group">
-	<button
-		class="btn btn-outline btn-error"
-		type="button"
-		on:click={() => {
-			close();
-		}}>Close</button
-	>
-	<button type="button" class="btn btn-outline btn-primary" on:click={submit}>Save</button>
+	</form>
 </div>
-
-<style>
-	.item {
-		padding: 0.3em;
-	}
-
-	.button-group {
-		display: flex;
-		justify-content: space-between;
-		width: 100%;
-		padding: 2em 0;
-	}
-</style>

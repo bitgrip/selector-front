@@ -9,18 +9,18 @@
 	export let showItemDetails = false;
 </script>
 
-<div class="w-full mt-10">
-	<h4 class="text-2xl font-bold">
-		<slot name="title" />
-	</h4>
+<div class="mt-1 mr-5">
+	{#if eventArray.length > 0}
+		<h4 class="text-2xl font-bold">
+			<slot name="title" />
+		</h4>
+	{/if}
 
-	<div class="flex flex-wrap flex-row gap-9 ">
+	<div class="flex flex-row gap-9 ">
 		{#if eventArray.length > 0}
 			{#each eventArray as event}
 				<EventDetail {showItemDetails} {runningEvent} {futureEvent} {event} {highlightPersonId} />
 			{/each}
-		{:else}
-			<slot name="noEventsText" />
 		{/if}
 	</div>
 </div>

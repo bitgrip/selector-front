@@ -62,7 +62,7 @@ export const mockedItems = [
 			}
 		],
 		description: 'Keeping KSB E2E Tests green! ',
-		isLongerThenOneDay: false,
+		isLongerThenOneDay: true,
 		groupes: [{ _id: '6371223b40d8a5954f19b1a5', name: 'KSB', description: 'proud ksb team' }]
 	}
 ];

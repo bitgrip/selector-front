@@ -7,7 +7,16 @@ export const handleCreateNewItem = async (event: CustomEvent<ItemRequestType>) =
 };
 
 export const handleDeleteItem = async (itemId: Item['_id']) => {
-	return await LocalApiItems.deleteItem(itemId);
+	try {
+		const response = await LocalApiItems.deleteItem(itemId);
+		if (response) {
+			return response;
+		} else {
+			return Promise.reject('error during item deletion');
+		}
+	} catch (error) {
+		return Promise.reject('error during item deletion');
+ 	}
 };
 
 export const handleEditItem = async (event: CustomEvent<ItemRequestType>, itemId: Item['_id']) => {

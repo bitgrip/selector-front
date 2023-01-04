@@ -6,6 +6,7 @@ export interface Item extends dbInfo {
 	name: string;
 	roles: Array<Role>;
 	description: string;
+	longDescription: string;
 	isLongerThenOneDay: boolean;
 	// item can only be in one group, it is still an array because of legacy i guess
 	groupes: Array<Group>;

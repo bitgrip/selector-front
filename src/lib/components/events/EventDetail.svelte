@@ -58,10 +58,10 @@
 
 	{#if runningEvent}
 		Ends in
-		<Counter days={timeToEnd.days} hours={timeToEnd.hours} />
+		<Counter days={timeToEnd.days} hours={timeToEnd.hours} textSize={'text-4xl'} />
 	{:else if futureEvent}
 		Starts in
-		<Counter days={timeToStart.days} hours={timeToStart.hours} />
+		<Counter days={timeToStart.days} hours={timeToStart.hours} textSize={'text-4xl'} />
 	{/if}
 	<br />
 	{event.endDate && event.endDate

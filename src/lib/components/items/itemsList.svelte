@@ -13,6 +13,8 @@
 	import type { Group } from '$lib/types/group';
 	import type { Role } from '$lib/types/role';
 	import Icon from 'components/general/Icon.svelte';
+	import Alert from 'components/general/Alert.svelte';
+	import type { AlertInfo } from '$lib/types/alert';
 
 	let items: Array<Item> = [];
 	let allRoles: Array<Role> = [];
@@ -26,6 +28,13 @@
 		roles: []
 	};
 	let isLoading = true;
+	let showAlert = false;
+
+	let alertInfo: AlertInfo = {
+		text: 'sample text',
+		timer: 4000,
+		type: 'success'
+	};
 
 	onMount(async () => {
 		await fetchEverything();
@@ -84,7 +93,6 @@
 {#if showCreateItemModal}
 	<Modal>
 		<ItemForm
-			title={'create new item'}
 			{allRoles}
 			{allGroupes}
 			on:submit={(event) => {
@@ -96,7 +104,9 @@
 			on:close={() => {
 				showCreateItemModal = false;
 			}}
-		/>
+		>
+			<h1 slot="title">create new item</h1>
+		</ItemForm>
 	</Modal>
 {/if}
 
@@ -109,10 +119,20 @@
 				showDeleteItemModal = false;
 			}}
 			on:ok={() => {
-				handleDeleteItem(workingItemReference._id).then(() => {
-					showDeleteItemModal = false;
-					fetchEverything();
-				});
+				handleDeleteItem(workingItemReference._id)
+					.then(() => {
+						showDeleteItemModal = false;
+						alertInfo.text = 'Item deleted.';
+						alertInfo.type = 'success';
+						showAlert = true;
+						fetchEverything();
+					})
+					.catch((e) => {
+						showDeleteItemModal = false;
+						alertInfo.text = `Error when deleting item: <${e}>`;
+						alertInfo.type = 'error';
+						showAlert = true;
+					});
 			}}
 		>
 			<svelte:fragment slot="title">Confirmation</svelte:fragment>
@@ -126,7 +146,6 @@
 {#if showEditItemModal}
 	<Modal>
 		<ItemForm
-			title={'edit Item'}
 			item={workingItemReference}
 			{allRoles}
 			{allGroupes}
@@ -139,8 +158,24 @@
 			on:close={() => {
 				showEditItemModal = false;
 			}}
-		/>
+		>
+			<h1 slot="title">
+				edit <span class="text-primary">{workingItemReference.name}</span>'s details
+			</h1>
+		</ItemForm>
 	</Modal>
+{/if}
+
+{#if showAlert}
+	<Alert
+		{alertInfo}
+		on:timeout={() => {
+			showAlert = false;
+		}}
+		on:click={() => {
+			showAlert = false;
+		}}
+	/>
 {/if}
 
 <style>

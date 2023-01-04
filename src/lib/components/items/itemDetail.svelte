@@ -22,6 +22,7 @@
 	import type { Event } from '$lib/types/event';
 	import { LocalApiEvents } from '$lib/apiClient/events.js';
 	import type { SvelteSelectableItem } from '$lib/types/svelte-select/detail';
+	import { marked } from 'marked';
 
 	export let item: Item;
 
@@ -39,6 +40,8 @@
 
 	let selected = '10';
 
+	let longInfoParsed = item.longDescription && marked.parse(item.longDescription);
+
 	onMount(async () => {
 		if (item._id) {
 			selectablePeople = await getAllSelectablePeople(item._id);
@@ -50,7 +53,6 @@
 	});
 
 	const fetchAllItemEvents = async () => {
-		// itemEvents = await LocalApiItems.getAllEvents(item._id);
 		itemEvents = await LocalApiItems.getItemEvents(item._id, 'all', '10');
 	};
 </script>
@@ -59,7 +61,12 @@
 	<div class="info">
 		<div class="prose max-w-none">
 			<h1 class="">Detail of <span class="text-accent">{item.name}</span></h1>
-
+			<button
+				class="btn btn-accent"
+				on:click={() => {
+					showCreateEventModalOpened = true;
+				}}><Fa size="lg" class="add-new-tracking-icon" icon={faPlus} /> Add new event</button
+			>
 			{#if isLoading}
 				<Load />
 			{:else}
@@ -67,12 +74,11 @@
 					<ItemEventSummary lastFewEvents={itemEvents.slice(-10)} />
 				{/if}
 
-				<button
-					class="btn btn-accent"
-					on:click={() => {
-						showCreateEventModalOpened = true;
-					}}><Fa size="lg" class="add-new-tracking-icon" icon={faPlus} /> Add new event</button
-				>
+				{#if longInfoParsed}
+					<div class="md mt-10 prose">
+						{@html longInfoParsed}
+					</div>
+				{/if}
 			{/if}
 		</div>
 	</div>
@@ -135,7 +141,7 @@
 		</Modal>
 	{/if}
 
-	<div class="prose">
+	<div class="prose mt-10">
 		<h2>People</h2>
 	</div>
 	{#if item._id}
@@ -218,5 +224,16 @@
 	button {
 		margin: 2em;
 		margin-left: 0em;
+	}
+
+	:global(.md a) {
+		color: hsl(var(--a));
+	}
+
+	:global(.md) {
+		line-height: 1.2rem;
+	}
+	:global(.md a:hover) {
+		color: hsl(var(--af));
 	}
 </style>

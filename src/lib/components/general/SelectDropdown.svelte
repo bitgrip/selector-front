@@ -10,6 +10,8 @@
 	export let value = '';
 	export let colorStyle = 'primary';
 
+	$: classesFromTheParent = $$props.class;
+
 	const dispatch = createEventDispatcher<{ dropdownSelect: SvelteSelectableItem }>();
 
 	let selected: SvelteSelectableItem = {
@@ -34,7 +36,7 @@
 	}
 </script>
 
-<div class="themed-select-{colorStyle}">
+<div class="themed-select-{colorStyle} {classesFromTheParent}">
 	<Select id="dropdown" {items} {placeholder} {value} on:select={(e) => handleSelect(e)} />
 </div>
 

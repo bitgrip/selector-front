@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { render, screen } from '@testing-library/svelte';
+import {
+	act,
+	render,
+	screen,
+	waitForElementToBeRemoved,
+	within
+} from '@testing-library/svelte';
 
 import ItemForm from './ItemForm.svelte';
 import { mockedGroups } from 'tests/mocks/mockedGroups.js';
@@ -10,12 +16,12 @@ import userEvent from '@testing-library/user-event';
 describe('Test ItemForm.svelte', async () => {
 	it('Renders empty form correctly and sends collected data', async () => {
 		const { component } = render(ItemForm, {
-			props: { title: 'Create new item', allGroupes: mockedGroups, allRoles: mockedRoles }
+			props: { allGroupes: mockedGroups, allRoles: mockedRoles }
 		});
 		const user = userEvent.setup();
 		let calledWith = {};
 
-		const nameInput = screen.getByRole('textbox', { name: 'Name' });
+		const nameInput = screen.getByRole('textbox', { name: 'Name*' });
 		await user.type(nameInput, 'Test Item');
 
 		const descriptionInput = screen.getByRole('textbox', { name: 'Description' });
@@ -24,36 +30,43 @@ describe('Test ItemForm.svelte', async () => {
 		const intervalToggle = screen.getByRole('checkbox', { name: 'Interval tracking?' });
 		intervalToggle.click();
 
-		// TODO I can not select a radio button :(
 		expect(screen.getByRole('radio', { name: 'KSB' })).toBeInTheDocument();
 		expect(screen.getByRole('radio', { name: 'Bitgrip' })).toBeInTheDocument();
 
-		// TODO i can not click on this dropdown either
-		// const inputNode = screen.getByPlaceholderText('Select..')
-		// const dropdown = document.getElementById('dropdown');
-		// console.log(inputNode);
-		// dropdown?.click();
-		// inputNode.click();
-		// user.click(inputNode);
-		// await expect(screen.getByText('Moderator')).toBeInTheDocument();
+		await act(() => screen.getByRole('radio', { name: 'KSB' }).click());
+
+		const inputNode = await screen.findByPlaceholderText('Select..');
+		await act(() => {
+			userEvent.click(inputNode);
+		});
+
+		expect(await screen.findByText('Moderator')).toBeInTheDocument();
+		expect(await screen.findByText('Recorder')).toBeInTheDocument();
+		expect(await screen.findByText('The curious one')).toBeInTheDocument();
+		expect(await screen.findByText('Main Guardian')).toBeInTheDocument();
+		expect(await screen.findByText('Support Guardian')).toBeInTheDocument();
+
+		await act(() => {
+			userEvent.click(screen.getByText('Support Guardian'));
+		});
+
+		expect(await screen.findByTestId('RoleBadge')).toBeInTheDocument();
 
 		expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument();
 		expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument();
-		expect(document.getElementById('dropdown')).toBeInTheDocument();
 
 		component.$on('submit', (e) => {
 			calledWith = e.detail;
 		});
 
 		screen.getByRole('button', { name: 'Save' }).click();
-
 		expect(calledWith).toMatchObject({
 			_id: '',
 			isLongerThenOneDay: true,
 			description: 'Test Description',
 			name: 'Test Item',
-			groupes: [],
-			roles: []
+			groupes: ['6371223b40d8a5954f19b1a5'],
+			roles: ['636e10adaf4383c4e81c83a1']
 		});
 	});
 
@@ -61,7 +74,6 @@ describe('Test ItemForm.svelte', async () => {
 		const { component } = render(ItemForm, {
 			props: {
 				item: mockedItems[0],
-				title: 'Create new item',
 				allGroupes: mockedGroups,
 				allRoles: mockedRoles
 			}
@@ -69,7 +81,7 @@ describe('Test ItemForm.svelte', async () => {
 		const user = userEvent.setup();
 		let calledWith = {};
 
-		const nameInput = screen.getByRole('textbox', { name: 'Name' });
+		const nameInput = screen.getByRole('textbox', { name: 'Name*' });
 		await user.type(nameInput, ' Changed');
 
 		const descriptionInput = screen.getByRole('textbox', { name: 'Description' });
@@ -78,12 +90,23 @@ describe('Test ItemForm.svelte', async () => {
 		const intervalToggle = screen.getByRole('checkbox', { name: 'Interval tracking?' });
 		intervalToggle.click();
 
-		// TODO still can not interract with the other 2 clicable elemenents :(
-		//screen.getByRole('radio', { name: 'KSB' }).click();
+		expect(screen.getByRole('radio', { name: 'KSB' })).toBeInTheDocument();
+		expect(screen.getByRole('radio', { name: 'Bitgrip' })).toBeInTheDocument();
+		await act(() => screen.getByRole('radio', { name: 'KSB' }).click());
+
+		expect(await screen.findByText('Moderator')).toBeInTheDocument();
+		expect(await screen.findByText('Recorder')).toBeInTheDocument();
+
+		// remove recorder role
+		const recorderBadgeDeleteIcon = within(screen.getByText('Recorder')).getByTestId('DeleteIcon');
+		expect(recorderBadgeDeleteIcon).toBeInTheDocument();
+		await act(() => {
+			userEvent.click(recorderBadgeDeleteIcon);
+		});
+		await waitForElementToBeRemoved(() => screen.getByText('Recorder'));
 
 		expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument();
 		expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument();
-		expect(document.getElementById('dropdown')).toBeInTheDocument();
 
 		component.$on('submit', (e) => {
 			calledWith = e.detail;
@@ -96,8 +119,8 @@ describe('Test ItemForm.svelte', async () => {
 			isLongerThenOneDay: true,
 			description: 'Every Friday the deepest secrets are revealed.  Changed',
 			name: 'Telling Secrets Changed',
-			groupes: ['6371224a40d8a5954f19b1aa'],
-			roles: ['636b4baa01f350e3c2177978', '636b4bfb01f350e3c217797c']
+			groupes: ['6371223b40d8a5954f19b1a5'],
+			roles: ['636b4baa01f350e3c2177978']
 		});
 	});
 });
