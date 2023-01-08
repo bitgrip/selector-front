@@ -78,7 +78,7 @@
 {#if isLoading}
 	<Load />
 {:else}
-	<div class="grid grid-cols-3 gap-5">
+	<div class="flex flex-wrap gap-9 ">
 		{#each roles as role}
 			<div>
 				<RoleCard

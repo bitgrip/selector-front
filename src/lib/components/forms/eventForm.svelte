@@ -5,11 +5,11 @@
 	import { replaceKeyValueInToArrayIfKeyExistOrAdd } from 'utils/arrayUtils';
 	import SelectDropdown from 'components/general/SelectDropdown.svelte';
 	import dayjs from 'dayjs';
-	import type { Person } from '$lib/types/person';
 	import type { Event, EventRequestType } from '$lib/types/event';
 	import type { Role } from '$lib/types/role';
 	import type { Item } from '$lib/types/item';
 	import type { SvelteSelectableItem } from '$lib/types/svelte-select/detail';
+	import RoleParticipantNumber from 'components/roles/RoleParticipantNumber.svelte';
 
 	export let peopleToSelectFrom: Array<SvelteSelectableItem> = [];
 	export let title = '';
@@ -35,7 +35,8 @@
 		groupes: [],
 		isLongerThenOneDay: false,
 		name: '',
-		description: ''
+		description: '',
+		longDescription: ''
 	};
 
 	console.log(peopleToSelectFrom);
@@ -78,6 +79,7 @@
 	function onSubmit() {
 		console.log(startDate);
 		console.log(endDate);
+		console.log(selectedParticipantsIds);
 
 		if (!startDate || startDate == 'Invalid Date') {
 			startDateMissing = true;
@@ -113,26 +115,50 @@
 		});
 	}
 
-	const getNameForRoleId = (roleId: Role['_id']): string => {
+	const getNamesForRole = (role: Role): string | string[] => {
 		let person = '';
-		event.participants.forEach((participant) => {
-			if ((participant.role as Role)._id == roleId) {
-				person = (participant.person as Person).name;
-				return;
-			}
-		});
+		let personNameArray: string[] = [];
+		if (role.canHaveMultipleParticipants) {
+			event.participants.forEach((participant) => {
+				if (participant.role._id == role._id) {
+					personNameArray.push(participant.person._id);
+				}
+			});
+			return personNameArray;
+		} else {
+			event.participants.forEach((participant) => {
+				if (participant.role._id == role._id) {
+					person = participant.person.name;
+					return person;
+				}
+			});
+		}
 		return person;
 	};
 
-	function handleSelect(event: CustomEvent<SvelteSelectableItem>, roleId: Role['_id']) {
-		replaceKeyValueInToArrayIfKeyExistOrAdd(selectedParticipantsIds, 'role', {
-			role: roleId,
-			person: event.detail.value
-		});
+	function handleSelect(
+		event: CustomEvent<{ [key: number]: SvelteSelectableItem }>,
+		roleId: Role['_id'],
+		roleWithMultiplePeople: boolean
+	) {
+		if (!roleWithMultiplePeople) {
+			replaceKeyValueInToArrayIfKeyExistOrAdd(selectedParticipantsIds, 'role', {
+				role: roleId,
+				person: event.detail[0].value
+			});
+		} else {
+			selectedParticipantsIds = selectedParticipantsIds.filter((item) => item.role !== roleId);
+			for (const [_key, participantItem] of Object.entries(event.detail)) {
+				selectedParticipantsIds.push({
+					role: roleId,
+					person: participantItem.value
+				});
+			}
+		}
 	}
 </script>
 
-<div class="p-4">
+<div class="p-4 max-w-xs w-xs">
 	<h1>{title}</h1>
 
 	<form id="itemForm" class="mt-4" on:submit|preventDefault={onSubmit}>
@@ -161,16 +187,21 @@
 		{#if item.roles}
 			{#each item.roles as role, i}
 				<div class="m-1">
-					<span class="label-text"> {role.name}</span>
+					<div class="flex flex-row justify-between">
+						<span class="label-text"> {role.name}</span>
+						<RoleParticipantNumber canHaveMultipleParticipants={role.canHaveMultipleParticipants} />
+					</div>
 					<SelectDropdown
 						items={peopleToSelectFrom}
 						placeholder={`Select ${role.name.toLowerCase()}`}
-						value={getNameForRoleId(role._id)}
-						on:dropdownSelect={(e) => handleSelect(e, role._id)}
+						multiSelect={role.canHaveMultipleParticipants}
+						value={getNamesForRole(role)}
+						on:dropdownSelect={(e) => handleSelect(e, role._id, role.canHaveMultipleParticipants)}
 					/>
 				</div>
 			{/each}
 		{/if}
+
 		<div class="mt-4 flex justify-between">
 			<button
 				class="btn btn-outline btn-error"

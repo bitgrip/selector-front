@@ -3,6 +3,7 @@
 	import Card from 'components/general/Card.svelte';
 	import type { Role } from '$lib/types/role';
 	import Icon from 'components/general/Icon.svelte';
+	import RoleParticipantNumber from './RoleParticipantNumber.svelte';
 
 	export let role: Role;
 
@@ -29,7 +30,24 @@
 
 	<div slot="content">
 		<div>{role.description}</div>
-		<div>{role.icon}</div>
+
+		<RoleParticipantNumber canHaveMultipleParticipants={role.canHaveMultipleParticipants} />
+
+		<!-- {#if role.canHaveMultipleParticipants}
+			<div class="tooltip tooltip-info" data-tip="Multiple persons can take this role in one event">
+				<div class="flex">
+					<Icon icon={'faMale'} />
+					<Icon icon={'faMale'} />
+					<Icon icon={'faMale'} />
+				</div>
+			</div>
+		{:else}
+			<div class="tooltip tooltip-info" data-tip="Only one persons can take this role in one event">
+				<div class="flex">
+					<Icon icon={'faMale'} />
+				</div>
+			</div>
+		{/if} -->
 	</div>
 </Card>
 

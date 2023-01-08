@@ -9,4 +9,12 @@
 </script>
 
 <!-- TODO fix this typing problem somehow -->
-<Fa {size} id={testId} class={cssClass} icon={Icons[icon]} />
+<span class={cssClass} id="icon-wrapper">
+	<Fa {size} id={testId} icon={Icons[icon]} />
+</span>
+
+<style>
+	/* #icon-wrapper:hover {
+		filter: brightness(0.85);
+	} */
+</style>

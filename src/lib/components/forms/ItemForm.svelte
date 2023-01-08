@@ -95,8 +95,8 @@
 	$: if (selectedRadioGroup) formItem.groupes = [selectedRadioGroup];
 	$: formItem.roles = selectedRolesIds;
 
-	const handleSelect = (event: CustomEvent<SvelteSelectableItem>) => {
-		selectedRolesIds = addItemToArrayIfNotAlreadyThere(selectedRolesIds, event.detail.value);
+	const handleSelect = (event: CustomEvent<{ [key: number]: SvelteSelectableItem }>) => {
+		selectedRolesIds = addItemToArrayIfNotAlreadyThere(selectedRolesIds, event.detail[0].value);
 	};
 
 	const deleteTrigger = (roleId: Role['_id']) => {

@@ -6,4 +6,5 @@ export interface Role extends dbInfo {
 	description: string;
 	icon: string;
 	itemsUsingRole?: Array<Item>;
+	canHaveMultipleParticipants: boolean;
 }
