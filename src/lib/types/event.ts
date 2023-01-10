@@ -7,6 +7,7 @@ export interface Event extends dbInfo {
 	startDate: string;
 	endDate: string;
 	participants: Array<Participant>;
+	eventNote?: string;
 }
 
 export interface EventRequestType extends Omit<Event, 'item' | 'participants' | '_id'> {

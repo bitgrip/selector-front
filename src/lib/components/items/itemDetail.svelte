@@ -42,6 +42,8 @@
 
 	let longInfoParsed = item.longDescription && marked.parse(item.longDescription);
 
+	let showDetailsInEventTable = false;
+
 	onMount(async () => {
 		if (item._id) {
 			selectablePeople = await getAllSelectablePeople(item._id);
@@ -195,9 +197,17 @@
 		/>
 	</div>
 
+	<div>
+		<label class="cursor-pointer label">
+			<span class="label-text">show event notes</span>
+			<input type="checkbox" class="toggle toggle-primary" bind:checked={showDetailsInEventTable} />
+		</label>
+	</div>
+
 	{#if itemEvents.length > 0}
 		<EventTable
 			itemHasIntervalTracking={item.isLongerThenOneDay}
+			{showDetailsInEventTable}
 			on:submitEdit={async (event) => {
 				workingEventReference = await LocalApiEvents.getEventById(event.detail.eventId);
 				showEditModalOpened = true;

@@ -25,6 +25,7 @@
 
 	export let eventsToShow: Event[] = [];
 	export let itemHasIntervalTracking = false;
+	export let showDetailsInEventTable = false;
 
 	let mappedTableData: TableDataType[] = [];
 
@@ -78,17 +79,19 @@
 				startDate: formatDate(event.startDate),
 				endDate: event.endDate ? formatDate(event.endDate) : '',
 				id: event._id,
+				notes: event.eventNote,
 				...roleWithNamesForTableData
 			};
 		});
 	};
 
-	let mapColumns = () => {
+	let mapColumns = (showNotes:boolean) => {
 		return [
 			{
 				name: 'id',
 				hidden: true
 			},
+
 			{
 				name: 'startDate',
 				id: 'startDate',
@@ -110,6 +113,10 @@
 			},
 
 			...participantTableHeaderTitles,
+			{
+				name: 'notes',
+				hidden: !showNotes
+			},
 			{
 				id: 'Edit',
 				sort: false,
@@ -157,7 +164,7 @@
 	$: {
 		if (grid) {
 			mappedTableData = mapDataNew(eventsToShow);
-			columns = mapColumns();
+			columns = mapColumns(showDetailsInEventTable);
 			grid.updateConfig({ data: mappedTableData, columns: columns }).forceRender();
 		}
 	}

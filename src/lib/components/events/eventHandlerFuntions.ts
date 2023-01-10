@@ -8,7 +8,8 @@ export const handleCreateNewEvent = async (event: EventRequestType, item: Item) 
 		item: item._id,
 		startDate: event.startDate,
 		endDate: event.endDate,
-		participants: event.participants
+		participants: event.participants,
+		eventNote: event.eventNote
 	};
 	return await LocalApiEvents.createEvent(payload);
 };
@@ -18,7 +19,8 @@ export const handleUpdateEvent = async (event: EventRequestType) => {
 		return await LocalApiEvents.updateEvent(event._id, {
 			startDate: event.startDate,
 			endDate: event.endDate,
-			participants: event.participants
+			participants: event.participants,
+			eventNote: event.eventNote
 		});
 	}
 };

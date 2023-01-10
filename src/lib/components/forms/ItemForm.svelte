@@ -112,7 +112,7 @@
 <div class="p-4">
 	<slot name="title" />
 
-	<form id="itemForm" class="mt-4" on:submit|preventDefault={onSubmit}>
+	<form id="itemForm" class="mt-4">
 		<div class="flex flex-col w-full lg:flex-row mt-2">
 			<div class="w-80 p-4 grid flex-grow  card bg-base-300 rounded-box">
 				<TextInput
@@ -211,7 +211,7 @@
 					close();
 				}}>Close</button
 			>
-			<button type="submit" class="btn btn-outline btn-info">Save</button>
+			<button type="button" class="btn btn-outline btn-info" on:click={onSubmit}>Save</button>
 		</div>
 	</form>
 </div>

@@ -74,4 +74,7 @@
 			{/each}
 		</div>
 	</div>
+	{#if event.eventNote}
+		Note: {event.eventNote}
+	{/if}
 </div>

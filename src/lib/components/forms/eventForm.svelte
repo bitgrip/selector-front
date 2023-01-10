@@ -10,6 +10,7 @@
 	import type { Item } from '$lib/types/item';
 	import type { SvelteSelectableItem } from '$lib/types/svelte-select/detail';
 	import RoleParticipantNumber from 'components/roles/RoleParticipantNumber.svelte';
+	import TextField from 'components/general/TextField.svelte';
 
 	export let peopleToSelectFrom: Array<SvelteSelectableItem> = [];
 	export let title = '';
@@ -20,12 +21,14 @@
 			_id: '',
 			description: '',
 			isLongerThenOneDay: false,
+			longDescription: '',
 			name: '',
 			groupes: [],
 			roles: []
 		},
 		startDate: '',
 		endDate: '',
+		eventNote: '',
 		participants: []
 	};
 
@@ -64,8 +67,10 @@
 	const formEvent: EventRequestType = {
 		startDate: startDate,
 		endDate: endDate,
+		eventNote: event.eventNote,
 		participants: selectedParticipantsIds
 	};
+	formEvent.eventNote = event.eventNote || '';
 
 	let startDateMissing = false;
 	let endDateMissing = false;
@@ -108,6 +113,7 @@
 				.toISOString();
 		}
 		formEvent.participants = selectedParticipantsIds;
+
 		formEvent._id = event._id || '';
 
 		dispatch('submit', {
@@ -201,6 +207,13 @@
 				</div>
 			{/each}
 		{/if}
+
+		<TextField
+			inputLabel={'Optional event notes'}
+			class="textarea-primary leading-tight h-15"
+			inputPlaceholder="Optional event note"
+			bind:textValue={formEvent.eventNote}
+		/>
 
 		<div class="mt-4 flex justify-between">
 			<button

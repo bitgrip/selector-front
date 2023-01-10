@@ -17,13 +17,15 @@
 			_id: '',
 			description: '',
 			isLongerThenOneDay: false,
+			longDescription: '',
 			name: '',
 			groupes: [],
 			roles: []
 		},
 		participants: [],
 		startDate: '',
-		endDate: ''
+		endDate: '',
+		eventNote: ''
 	};
 
 	event.participants = event.participants as Participant[];
@@ -82,4 +84,8 @@
 			/>
 		</div>
 	{/each}
+	<br />
+	{#if event.eventNote}
+		Note: {event.eventNote}
+	{/if}
 </div>
