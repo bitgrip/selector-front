@@ -1,15 +1,17 @@
 <script>
 	import { onMount } from 'svelte';
 	import { themeChange } from 'theme-change';
+	import { env } from '$env/dynamic/public';
 
 	onMount(() => {
 		themeChange(false);
 		// 👆 false parameter is required for svelte
 	});
+
+	let showOcd = env.PUBLIC_OCD_SHOW === 'true';
 </script>
 
 <header class="header-area">
-
 	<div class="navbar fixed top-0 left-0 right-0 z-50 bg-neutral-focus shadow-lg border-none">
 		<div class="navbar-start">
 			<div class="dropdown">
@@ -36,6 +38,9 @@
 					<li><a class="btn btn-ghost normal-case text-xl" href="/roles">Roles</a></li>
 					<li><a class="btn btn-ghost normal-case text-xl" href="/groups">Groups</a></li>
 					<li><a class="btn btn-ghost normal-case text-xl" href="/about">About</a></li>
+					{#if showOcd}
+						<li><a class="btn btn-ghost normal-case text-xl" href="/ocd">OnCallDuty</a></li>
+					{/if}
 				</ul>
 			</div>
 		</div>
