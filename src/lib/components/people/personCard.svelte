@@ -23,5 +23,7 @@
 		});
 	}}
 >
-	<a slot="title" href={`people/${person._id}`}>{person.name}</a>
+	<h4 slot="title" class="text-accent hover:text-accent-focus transform transition duration-200">
+		<a href={`people/${person._id}`}>{person.name}</a>
+	</h4>
 </Card>

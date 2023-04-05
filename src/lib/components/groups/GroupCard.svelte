@@ -21,8 +21,11 @@
 		});
 	}}
 >
-	<a slot="title" href={`groups/${group._id}`}>{group.name}</a>
-
+	<div slot="title">
+		<h4 class="text-accent no-underline hover:text-accent-focus transform transition duration-500">
+			<a href={`groups/${group._id}`}>{group.name}</a>
+		</h4>
+	</div>
 	<div slot="content">
 		<div>{group.description}</div>
 		<br />

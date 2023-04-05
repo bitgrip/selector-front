@@ -23,10 +23,10 @@
 		});
 	}}
 >
-	<svelte:fragment slot="title">
+	<div slot="title" class="flex flex-row text-accent items-center ">
 		<Icon size="lg" icon={role.icon} />
-		<span>{role.name}</span></svelte:fragment
-	>
+		<h4 class="ml-2">{role.name}</h4>
+	</div>
 
 	<div slot="content">
 		<div>{role.description}</div>

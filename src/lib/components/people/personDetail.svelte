@@ -8,6 +8,11 @@
 	export let runningEvents: Array<Event> = [];
 </script>
 
+<svelte:head>
+	<title>{`Detail of ${person.name}`}</title>
+	<meta name="description" content="Detail of ${person.name}" />
+</svelte:head>
+
 <div class="top prose">
 	<h1><span class="text-accent"> {person.name}</span>'s details</h1>
 </div>

@@ -5,6 +5,7 @@
 	import RoleBadge from 'components/roles/RoleBadge.svelte';
 	import Link from 'components/general/Link.svelte';
 	import { ColorStyle } from '$lib/types/styles';
+	import ItemLink from './ItemLink.svelte';
 
 	export let item: Item;
 
@@ -25,7 +26,15 @@
 		});
 	}}
 >
-	<a slot="title" href={`items/${item._id}`}>{item.name}</a>
+	<!-- <a slot="title" href={`items/${item._id}`}>{item.name}</a> -->
+	<div slot="title">
+		<h4>
+			<ItemLink
+				class="text-accent no-underline hover:text-accent-focus transform transition duration-200"
+				{item}
+			/>
+		</h4>
+	</div>
 
 	<div slot="content" class="prose flex flex-col">
 		<p data-testid="ItemDescription">{item.description}</p>

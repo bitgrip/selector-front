@@ -16,7 +16,7 @@ export const handleDeleteItem = async (itemId: Item['_id']) => {
 		}
 	} catch (error) {
 		return Promise.reject('error during item deletion');
- 	}
+	}
 };
 
 export const handleEditItem = async (event: CustomEvent<ItemRequestType>, itemId: Item['_id']) => {

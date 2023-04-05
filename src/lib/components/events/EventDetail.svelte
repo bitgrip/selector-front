@@ -10,6 +10,10 @@
 	import type { TimeStruct } from '$lib/types/utils';
 	import type { Participant } from '$lib/types/participant';
 	import { ColorStyle, TypeStyle } from '$lib/types/styles';
+	import Card from 'components/general/Card.svelte';
+	import { createEventDispatcher } from 'svelte';
+
+	const dispatch = createEventDispatcher<{ delete: Event; edit: Event }>();
 
 	export let event: Event = {
 		_id: '',
@@ -51,41 +55,67 @@
 	const timeToStart = getRemainingTime(new Date(event.startDate));
 </script>
 
-<div class="card w-96 bg-neutral shadow-xl overflow-visible p-6 h-fit w-200">
-	{#if event.item && showItemDetails}
-		<h4>
-			<ItemLink item={event.item} />
-		</h4>
-	{/if}
+<Card
+	width={400}
+	testId="EventCard"
+	on:deleteTrigger={() => {
+		dispatch('delete', {
+			...event
+		});
+	}}
+	on:settingsTrigger={() => {
+		dispatch('edit', {
+			...event
+		});
+	}}
+>
+	<div slot="title">
+		{#if event.item && showItemDetails}
+			<h4
+				class="text-accent no-underline hover:text-accent-focus transform transition duration-500"
+			>
+				<ItemLink item={event.item} />
+			</h4>
+		{/if}
+	</div>
 
-	{#if runningEvent}
-		Ends in
-		<Counter days={timeToEnd.days} hours={timeToEnd.hours} textSize={'text-4xl'} />
-	{:else if futureEvent}
-		Starts in
-		<Counter days={timeToStart.days} hours={timeToStart.hours} textSize={'text-4xl'} />
-	{/if}
-	<br />
-	{event.endDate && event.endDate
-		? `from ${formatDate(event.startDate)} to ${formatDate(event.endDate)}`
-		: `on ${formatDate(event.startDate)}`}
-	<br />
+	<div slot="content" class="prose flex flex-col">
+		{#if runningEvent}
+			{#if event.item.isLongerThenOneDay === true}
+				Ends in
+				<Counter days={timeToEnd.days} hours={timeToEnd.hours} textSize={'text-4xl'} />
+			{:else}
+				Ends
+				<div class="flex flex-col p-2 bg-neutral rounded-box text-neutral-content">
+					<span class={`countdown font-mono text-4xl`}> Today </span>
+				</div>
+			{/if}
+		{:else if futureEvent}
+			Starts in
+			<Counter days={timeToStart.days} hours={timeToStart.hours} textSize={'text-4xl'} />
+		{/if}
+		<br />
+		{event.endDate && event.endDate
+			? `from ${formatDate(event.startDate)} to ${formatDate(event.endDate)}`
+			: `on ${formatDate(event.startDate)}`}
+		<br />
 
-	{#each event.participants as participant}
-		<div>
-			<RoleBadge
-				type={highlightPersonId === participant.person._id ? TypeStyle.primary : TypeStyle.ghost}
-				role={participant.role}
-			/>:<PersonLink
-				person={participant.person}
-				type={highlightPersonId === participant.person._id
-					? ColorStyle.primary
-					: ColorStyle.neutral}
-			/>
-		</div>
-	{/each}
-	<br />
-	{#if event.eventNote}
-		Note: {event.eventNote}
-	{/if}
-</div>
+		{#each event.participants as participant}
+			<div>
+				<RoleBadge
+					type={highlightPersonId === participant.person._id ? TypeStyle.primary : TypeStyle.ghost}
+					role={participant.role}
+				/>:<PersonLink
+					person={participant.person}
+					type={highlightPersonId === participant.person._id
+						? ColorStyle.primary
+						: ColorStyle.neutral}
+				/>
+			</div>
+		{/each}
+		<br />
+		{#if event.eventNote}
+			Note: {event.eventNote}
+		{/if}
+	</div>
+</Card>

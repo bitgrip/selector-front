@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-	<title>Groups</title>
+	<title>Groupes | Selector</title>
+	<meta name="description" content="Overview of all available groupes" />
 </svelte:head>
-
 <GroupList />

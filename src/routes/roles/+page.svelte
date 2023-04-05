@@ -3,7 +3,8 @@
 </script>
 
 <svelte:head>
-	<title>Roles</title>
+	<title>Roles | Selector</title>
+	<meta name="description" content="Overview of all available roles" />
 </svelte:head>
 
 <RoleList />

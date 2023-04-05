@@ -90,6 +90,11 @@
 	</Modal>
 {/if}
 
+<svelte:head>
+	<title>People | Selector</title>
+	<meta name="description" content="Overview of all available roles" />
+</svelte:head>
+
 <div class="header prose">
 	<h1>People</h1>
 

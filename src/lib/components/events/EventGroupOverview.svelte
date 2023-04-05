@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Event } from '$lib/types/event';
+	import { createEventDispatcher } from 'svelte';
 	import EventDetail from './EventDetail.svelte';
 
 	export let eventArray: Event[] = [];
@@ -19,7 +20,15 @@
 	<div class="flex flex-row gap-9 ">
 		{#if eventArray.length > 0}
 			{#each eventArray as event}
-				<EventDetail {showItemDetails} {runningEvent} {futureEvent} {event} {highlightPersonId} />
+				<EventDetail
+					on:delete
+					on:edit
+					{showItemDetails}
+					{runningEvent}
+					{futureEvent}
+					{event}
+					{highlightPersonId}
+				/>
 			{/each}
 		{/if}
 	</div>

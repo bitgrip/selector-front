@@ -29,6 +29,12 @@
 
 	let mappedTableData: TableDataType[] = [];
 
+	$: eventsToShow.sort((a, b) => {
+		const dateA = new Date(a.startDate);
+		const dateB = new Date(b.startDate);
+		return new Date(dateB).valueOf() - new Date(dateA).valueOf();
+	});
+
 	// TODO fix this so the columns can be type of TColumn[]?
 	// let columns: TColumn[] = [];
 	let columns: any = [];
@@ -85,7 +91,7 @@
 		});
 	};
 
-	let mapColumns = (showNotes:boolean) => {
+	let mapColumns = (showNotes: boolean) => {
 		return [
 			{
 				name: 'id',
@@ -247,9 +253,14 @@
 	.gridjs-table {
 		border: none !important;
 		width: 100%;
+		word-wrap: break-word !important;
 	}
 	.gridjs-wrapper {
 		border: none;
 		margin: 0 auto;
+	}
+
+	td.gridjs-td {
+		word-break: break-word !important;
 	}
 </style>

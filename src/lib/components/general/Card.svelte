@@ -27,9 +27,11 @@
 >
 	<div class="card-body">
 		<div class="card-header flex justify-between align-center">
-			<h2 class="text-{titleTextColor} hover:text-{titleTextColor}-focus card-title">
+			{#if $$slots.title}
+				<!-- <h2 class="text-{titleTextColor} hover:text-{titleTextColor}-focus card-title"> -->
 				<slot name="title" />
-			</h2>
+				<!-- </h2> -->
+			{/if}
 
 			<div class="card-actions justify-end">
 				<button on:click={settingsTrigger}><Fa size="lg" id="setting" icon={faGear} /></button>
