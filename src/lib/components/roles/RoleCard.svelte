@@ -12,7 +12,7 @@
 
 <Card
 	testId="RoleCard"
-	class="lg:w-3/12 w-full"
+	class="lg:w-3/12 w-full lg:min-w-max"
 	on:deleteTrigger={() => {
 		dispatch('delete', {
 			...role

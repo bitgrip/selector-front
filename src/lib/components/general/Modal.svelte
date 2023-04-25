@@ -21,7 +21,7 @@
 	<div
 		use:clickOutsideToClose
 		on:outclick={() => clickOutside()}
-		class="sm:h-[calc(100%-3rem)] w-min my-6 mx-auto relative w-auto pointer-events-none  {classesFromTheParent} "
+		class="sm:h-[calc(100%-3rem)] my-6 mx-auto relative w-auto pointer-events-none  {classesFromTheParent} "
 	>
 		<div
 			class="bg-neutral max-h-full overflow-hidden border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-clip-padding rounded-md outline-none text-current"

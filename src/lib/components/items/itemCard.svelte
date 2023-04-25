@@ -14,7 +14,7 @@
 
 <Card
 	testId="ItemCard"
-	class="lg:w-1/4 w-full min-w-fit"
+	class="lg:w-1/4 w-full lg:min-w-fit"
 	on:deleteTrigger={() => {
 		dispatch('delete', {
 			...item

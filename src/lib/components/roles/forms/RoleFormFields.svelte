@@ -33,10 +33,12 @@
 
 	for (const key of Object.entries(Icons)) {
 		const anyKey = key as any; // TODO fix this type somehow
-		selectableIcons.push({
-			value: anyKey[0],
-			label: anyKey[1].iconName
-		});
+		if (anyKey[0] && anyKey[1]?.icon) {
+			selectableIcons.push({
+				value: anyKey[0],
+				label: anyKey[1].iconName
+			});
+		}
 	}
 
 	let selectedIcon = role.icon || 'faQuestion';

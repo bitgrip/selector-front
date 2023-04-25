@@ -32,9 +32,9 @@
 	</svelte:fragment>
 
 	<svelte:fragment slot="modal-buttons">
-		<div class="mt-4 flex justify-between w-full flex-wrap">
+		<div class="mt-4 flex justify-between w-full flex-wrap gap-3">
 			<button
-				class="mb-3 btn btn-outline btn-info w-full lg:w-auto lg:mb-0"
+				class="mb-3 btn btn-outline btn-info w-full lg:w-auto lg:mb-0 grow"
 				type="button"
 				on:click={() => {
 					cancel();
@@ -43,7 +43,7 @@
 			<button
 				type="button"
 				disabled={confirmationButtonIsDisabled}
-				class="btn btn-outline btn-error w-full lg:w-auto"
+				class="btn btn-outline btn-error w-full lg:w-auto grow"
 				on:click={() => {
 					ok();
 				}}
