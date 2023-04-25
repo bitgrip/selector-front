@@ -11,7 +11,7 @@
 	const dispatch = createEventDispatcher<{ delete: void }>();
 </script>
 
-<div class="tooltip tooltip-info" data-testid="RoleBadge" data-tip={role.description}>
+<div class="tooltip tooltip-info m-1" data-testid="RoleBadge" data-tip={role.description}>
 	<div class={`badge badge-${type} p-2`}>
 		<span class="mr-1">
 			<Icon testId="RoleIcon" icon={role.icon} />

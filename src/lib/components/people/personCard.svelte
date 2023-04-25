@@ -9,7 +9,8 @@
 </script>
 
 <Card
-	width={250}
+	testId="PersonCard"
+	class="lg:w-1/6 md:w-1/6 w-full min-w-fit"
 	backgroundColor={person.active ? 'bg-neutral' : 'bg-neutral-focus'}
 	titleTextColor={person.active ? 'accent' : 'error'}
 	on:deleteTrigger={() => {
@@ -23,7 +24,7 @@
 		});
 	}}
 >
-	<h4 slot="title" class="text-accent hover:text-accent-focus transform transition duration-200">
+	<h4 slot="title" class="text-accent hover:text-accent-focus transform transition duration-200 mr-4">
 		<a href={`people/${person._id}`}>{person.name}</a>
 	</h4>
 </Card>

@@ -13,8 +13,8 @@
 </script>
 
 <Card
-	width={400}
 	testId="ItemCard"
+	class="lg:w-1/4 w-full min-w-fit"
 	on:deleteTrigger={() => {
 		dispatch('delete', {
 			...item
@@ -26,7 +26,6 @@
 		});
 	}}
 >
-	<!-- <a slot="title" href={`items/${item._id}`}>{item.name}</a> -->
 	<div slot="title">
 		<h4>
 			<ItemLink
@@ -36,11 +35,11 @@
 		</h4>
 	</div>
 
-	<div slot="content" class="prose flex flex-col">
+	<div slot="content" class="prose flex flex-col max-w-xs	">
 		<p data-testid="ItemDescription">{item.description}</p>
 
 		<span class="font-semibold mt-3">Roles </span>
-		<div class="">
+		<div class="flex flex-wrap justify-start">
 			{#each item.roles || [] as role}
 				<RoleBadge {role} />
 			{/each}

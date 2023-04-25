@@ -9,7 +9,8 @@
 </script>
 
 <Card
-	width={400}
+	testId="GroupCard"
+	class="lg:w-3/12 w-full min-w-fit"
 	on:deleteTrigger={() => {
 		dispatch('delete', {
 			...group

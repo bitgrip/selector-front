@@ -3,12 +3,13 @@
 @tailwind utilities;
 
 html {
-	width: 80%;
+	width: 100%;
 	max-width: 1400px;
 	padding: 1em 1em;
 	margin: auto;
 	line-height: 1.75;
 	font-size: 1.15em;
+	min-width: 375px;
 }
 
 @layer base {

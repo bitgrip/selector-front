@@ -11,7 +11,8 @@
 </script>
 
 <Card
-	width={400}
+	testId="RoleCard"
+	class="lg:w-3/12 w-full"
 	on:deleteTrigger={() => {
 		dispatch('delete', {
 			...role

@@ -1,30 +1,26 @@
 <script lang="ts">
-	import EventTable from 'components/events/EventTable.svelte';
-	import EventForm from 'components/forms/eventForm.svelte';
-	import Modal from 'components/general/Modal.svelte';
-	import { onMount } from 'svelte';
-	import PeopleTable from 'components/people/peopleTable.svelte';
-	import { getAllSelectablePeople } from 'components/people/peopleHandlerFunctions';
+	import { LocalApiEvents } from '$lib/apiClient/events.js';
+	import { LocalApiItems } from '$lib/apiClient/items';
 	import {
 		handleCreateNewEvent,
-		handleUpdateEvent,
-		handleDeleteEvent
+		handleDeleteEvent,
+		handleUpdateEvent
 	} from '$lib/components/events/eventHandlerFuntions';
-	import ConfirmDeleteAction from 'components/general/ConfirmDeleteAction.svelte';
-	import { getAllPeopleAndRoleCount, getItemEvents } from './itemHandlerFunctions';
-	import { faPlus } from '@fortawesome/free-solid-svg-icons';
-	import Fa from 'svelte-fa';
-	import ItemEventSummary from './itemEventSummary.svelte';
-	import Load from 'components/general/Load.svelte';
-	import Error from 'components/general/Error.svelte';
-	import { LocalApiItems } from '$lib/apiClient/items';
-	import type { Item } from '$lib/types/item';
-	import type { Event } from '$lib/types/event';
-	import { LocalApiEvents } from '$lib/apiClient/events.js';
-	import type { SvelteSelectableItem } from '$lib/types/svelte-select/detail';
-	import { marked } from 'marked';
-	import { LocalApiPeople } from '$lib/apiClient/people';
 	import type { Attendance } from '$lib/types/attendance';
+	import type { Event } from '$lib/types/event';
+	import type { Item } from '$lib/types/item';
+	import type { SvelteSelectableItem } from '$lib/types/svelte-select/detail';
+	import EventTable from 'components/events/EventTable.svelte';
+	import EventFormModal from 'components/events/forms/EventFormModal.svelte';
+	import DangerZoneConfirmDeleteActionModal from 'components/general/DangerZoneConfirmDeleteActionModal.svelte';
+	import Error from 'components/general/Error.svelte';
+	import Load from 'components/general/Load.svelte';
+	import PageHeader from 'components/general/PageHeader.svelte';
+	import { getAllSelectablePeople } from 'components/people/peopleHandlerFunctions';
+	import PeopleTable from 'components/people/peopleTable.svelte';
+	import { marked } from 'marked';
+	import { onMount } from 'svelte';
+	import ItemEventSummary from './itemEventSummary.svelte';
 
 	export let item: Item;
 
@@ -59,6 +55,7 @@
 
 	const fetchAllItemEvents = async () => {
 		itemEvents = await LocalApiItems.getItemEvents(item._id, 'all', '10');
+		console.log(itemEvents);
 	};
 
 	let peopleAttendance: Attendance = {};
@@ -70,106 +67,113 @@
 
 <svelte:head>
 	<title>{`${item.name} tracking | Selector`}</title>
-	<meta name="description" content="Tracking of {item.name}: {item.description}" />
+	{#if showCreateEventModalOpened || showEditModalOpened || showDeleteEventModal}
+		<style>
+			body {
+				overflow-y: hidden;
+			}
+		</style>
+	{/if}
 </svelte:head>
 
 {#if !nonExistingItem}
-	<div class="info">
-		<div class="prose max-w-none">
-			<h1 class="">Detail of <span class="text-accent">{item.name}</span></h1>
-			<button
-				class="btn btn-accent"
-				on:click={() => {
-					showCreateEventModalOpened = true;
-				}}><Fa size="lg" class="add-new-tracking-icon" icon={faPlus} /> Add new event</button
-			>
-			{#if isLoading}
-				<Load />
-			{:else}
-				{#if itemEvents.length > 0}
-					<ItemEventSummary
-						on:delete={(event) => {
-							showDeleteEventModal = true;
-							workingEventReference = event.detail;
-						}}
-						on:edit={(event) => {
-							showEditModalOpened = true;
-							workingEventReference = event.detail;
-						}}
-						lastFewEvents={itemEvents.slice(-10)}
-					/>
-				{/if}
+	<PageHeader buttonText="Add new event" on:buttonClick={() => (showCreateEventModalOpened = true)}>
+		<svelte:fragment slot="title"
+			>Detail of <span class="text-accent">{item.name}</span></svelte:fragment
+		>
+	</PageHeader>
 
-				{#if longInfoParsed}
-					<div class="md mt-10">
-						{@html longInfoParsed}
-					</div>
-				{/if}
+	<div class="mt-16 mb-8">
+		{#if isLoading}
+			<Load />
+		{:else}
+			{#if itemEvents.length > 0}
+				<ItemEventSummary
+					on:delete={(event) => {
+						showDeleteEventModal = true;
+						workingEventReference = event.detail;
+					}}
+					on:edit={(event) => {
+						showEditModalOpened = true;
+						workingEventReference = event.detail;
+					}}
+					lastFewEvents={itemEvents.slice(-10)}
+				/>
 			{/if}
-		</div>
+
+			{#if longInfoParsed}
+				<div class="md mt-10">
+					{@html longInfoParsed}
+				</div>
+			{/if}
+		{/if}
 	</div>
 
 	{#if showCreateEventModalOpened}
-		<Modal>
-			<EventForm
-				title={'Create new event'}
-				peopleToSelectFrom={selectablePeople}
-				{item}
-				on:close={() => {
+		<EventFormModal
+			class="lg:w-4/12 w-full"
+			peopleToSelectFrom={selectablePeople}
+			{item}
+			on:submit={(event) => {
+				handleCreateNewEvent(event.detail, item).then(() => {
 					showCreateEventModalOpened = false;
-				}}
-				on:submit={(event) => {
-					handleCreateNewEvent(event.detail, item).then(() => {
-						showCreateEventModalOpened = false;
-						fetchAllItemEvents();
-						fetchPeopleAttendance();
-					});
-				}}
-			/>
-		</Modal>
+					fetchAllItemEvents();
+					fetchPeopleAttendance();
+				});
+			}}
+			on:close={() => {
+				showCreateEventModalOpened = false;
+			}}
+		>
+			<h1 slot="title">Create new event</h1>
+		</EventFormModal>
 	{/if}
 
 	{#if showEditModalOpened}
-		<Modal>
-			<EventForm
-				title={'Edit event'}
-				peopleToSelectFrom={selectablePeople}
-				event={workingEventReference}
-				{item}
-				on:close={() => {
+		<EventFormModal
+			class="lg:w-4/12 w-full"
+			peopleToSelectFrom={selectablePeople}
+			{item}
+			event={workingEventReference}
+			on:submit={(event) => {
+				handleUpdateEvent(event.detail).then(() => {
 					showEditModalOpened = false;
-				}}
-				on:submit={(event) => {
-					handleUpdateEvent(event.detail).then(() => {
-						showEditModalOpened = false;
-						fetchAllItemEvents();
-						fetchPeopleAttendance();
-					});
-				}}
-			/>
-		</Modal>
+					fetchAllItemEvents();
+					fetchPeopleAttendance();
+				});
+			}}
+			on:close={() => {
+				showEditModalOpened = false;
+			}}
+		>
+			<h1 slot="title">Edit event</h1>
+		</EventFormModal>
 	{/if}
 
 	{#if showDeleteEventModal}
-		<Modal>
-			<ConfirmDeleteAction
-				on:cancel={() => {
-					showDeleteEventModal = false;
-				}}
-				on:ok={() => {
-					handleDeleteEvent(workingEventReference).then(() => {
-						fetchAllItemEvents();
-						fetchPeopleAttendance();
-					});
-					showDeleteEventModal = false;
-				}}
-			>
-				<svelte:fragment slot="title">Delete confirmation</svelte:fragment>
-				<span slot="content"
-					>Do you really want to delete this event? You can not reverse this action.
-				</span>
-			</ConfirmDeleteAction>
-		</Modal>
+		<DangerZoneConfirmDeleteActionModal
+			class="lg:w-1/2"
+			subject="Event"
+			expectedConfirmationText=""
+			on:cancel={() => {
+				showDeleteEventModal = false;
+			}}
+			on:ok={() => {
+				isLoading = true;
+				handleDeleteEvent(workingEventReference).then(() => {
+					fetchAllItemEvents();
+					fetchPeopleAttendance();
+					isLoading = false;
+				});
+			
+				showDeleteEventModal = false;
+			}}
+		>
+			<h1 slot="title">Delete confirmation</h1>
+			<span slot="confirmation-content"
+				>Do you really want to delete this event? You can not reverse this action.
+			</span>
+		</DangerZoneConfirmDeleteActionModal>
 	{/if}
 
 	<h2 class="pt-5">People</h2>
@@ -247,15 +251,6 @@
 {/if}
 
 <style>
-	.info {
-		margin-top: 5em;
-	}
-
-	button {
-		margin: 2em;
-		margin-left: 0em;
-	}
-
 	:global(.md a) {
 		color: hsl(var(--a));
 	}

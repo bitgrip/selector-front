@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { getActiveEvents, getEventsWithFutureDates, getLastEvent } from 'utils/date';
 	import EventGroupOverview from 'components/events/EventGroupOverview.svelte';
 	import type { Event } from '$lib/types/event';
@@ -11,6 +10,10 @@
 
 	$: futureEvents = getEventsWithFutureDates(lastFewEvents);
 	$: runningEvents = getActiveEvents(lastFewEvents);
+
+	console.log(lastFewEvents);
+	console.log(futureEvents);
+	console.log(runningEvents);
 </script>
 
 <div class="flex flex-wrap ">

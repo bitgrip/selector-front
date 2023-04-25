@@ -1,14 +1,12 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import Modal from 'components/general/Modal.svelte';
-	import RoleForm from 'components/forms/roleForm.svelte';
-	import { faPlus } from '@fortawesome/free-solid-svg-icons';
-	import Fa from 'svelte-fa';
-	import RoleCard from 'components/roles/RoleCard.svelte';
-	import DangerZoneConfirmDeleteAction from 'components/general/DangerZoneConfirmDeleteAction.svelte';
-	import Load from 'components/general/Load.svelte';
 	import { LocalApiRoles } from '$lib/apiClient/roles';
 	import type { Role } from '$lib/types/role';
+	import DangerZoneConfirmDeleteActionModal from 'components/general/DangerZoneConfirmDeleteActionModal.svelte';
+	import Load from 'components/general/Load.svelte';
+	import PageHeader from 'components/general/PageHeader.svelte';
+	import RoleCard from 'components/roles/RoleCard.svelte';
+	import { onMount } from 'svelte';
+	import RoleFormModal from './forms/RoleFormModal.svelte';
 
 	let roles: Array<Role> = [];
 
@@ -38,6 +36,7 @@
 
 	const fetchAllRoles = async () => {
 		roles = await LocalApiRoles.getAllRoles();
+		isLoading = false;
 	};
 
 	const handleCreateNewRole = async (event: CustomEvent<Role>) => {
@@ -48,6 +47,7 @@
 
 	const handleDeleteRole = async (roleId: Role['_id']) => {
 		await LocalApiRoles.deleteRole(roleId);
+		isLoading = true;
 		fetchAllRoles();
 		showDeleteModal = false;
 	};
@@ -64,89 +64,79 @@
 	};
 </script>
 
-<div class="header prose">
-	<h1>Roles</h1>
+<svelte:head>
+	{#if letShowEditModal || letShowCreateModal || showDeleteModal}
+		<style>
+			body {
+				overflow-y: hidden;
+			}
+		</style>
+	{/if}
+</svelte:head>
 
-	<button
-		class="btn btn-accent"
-		on:click={(e) => {
-			letShowCreateModal = true;
-		}}><Fa size="lg" class="add-new-role-icon" icon={faPlus} /> Add Role</button
-	>
-</div>
+<PageHeader buttonText="Add Role" on:buttonClick={() => (letShowCreateModal = true)}>
+	<svelte:fragment slot="title">Roles</svelte:fragment>
+</PageHeader>
 
 {#if isLoading}
 	<Load />
 {:else}
 	<div class="flex flex-wrap gap-9 ">
 		{#each roles as role}
-			<div>
-				<RoleCard
-					{role}
-					on:delete={triggeredDeleteRole}
-					on:edit={(event) => {
-						letShowEditModal = true;
-						roleToBeEdited = event.detail;
-					}}
-				/>
-			</div>
+			<RoleCard
+				{role}
+				on:delete={triggeredDeleteRole}
+				on:edit={(event) => {
+					letShowEditModal = true;
+					roleToBeEdited = event.detail;
+				}}
+			/>
 		{/each}
 	</div>
 {/if}
 
 {#if letShowCreateModal}
-	<Modal>
-		<RoleForm
-			on:submit={handleCreateNewRole}
-			on:close={() => {
-				letShowCreateModal = false;
-			}}
-		>
-			<h1 slot="title">create new role</h1>
-		</RoleForm>
-	</Modal>
+	<RoleFormModal
+		class="lg:w-fit w-full"
+		on:submit={handleCreateNewRole}
+		on:close={() => {
+			letShowCreateModal = false;
+		}}
+	>
+		<h1 slot="title">Create new role</h1>
+	</RoleFormModal>
 {/if}
 
 {#if letShowEditModal}
-	<Modal>
-		<RoleForm
-			title={'create new role'}
-			role={roleToBeEdited}
-			on:submit={handleEditRole}
-			on:close={() => {
-				letShowEditModal = false;
-			}}
-		>
-			<h1 slot="title">
-				edit <span class="text-primary">{roleToBeEdited.name}</span>'s details
-			</h1>
-		</RoleForm>
-	</Modal>
+	<RoleFormModal
+		class="lg:w-fit w-full"
+		role={roleToBeEdited}
+		on:submit={handleEditRole}
+		on:close={() => {
+			letShowEditModal = false;
+		}}
+	>
+		<h1 slot="title">
+			edit <span class="text-primary">{roleToBeEdited.name}</span>'s details
+		</h1>
+	</RoleFormModal>
 {/if}
 
 {#if showDeleteModal}
-	<Modal>
-		<DangerZoneConfirmDeleteAction
-			subject="role"
-			expectedConfirmationText={roleToBeDeleted.name}
-			on:cancel={() => {
-				showDeleteModal = false;
-			}}
-			on:ok={() => {
-				handleDeleteRole(roleToBeDeleted._id);
-			}}
-		>
-			<svelte:fragment slot="title">Confirmation</svelte:fragment>
-			<span slot="content"
-				>Do you really want to delete {roleToBeDeleted.name}? You can not reverse this action.
-			</span>
-		</DangerZoneConfirmDeleteAction>
-	</Modal>
+	<DangerZoneConfirmDeleteActionModal
+		class="lg:w-1/2"
+		subject="role"
+		expectedConfirmationText={roleToBeDeleted.name}
+		on:cancel={() => {
+			showDeleteModal = false;
+		}}
+		on:ok={() => {
+			handleDeleteRole(roleToBeDeleted._id);
+		}}
+	>
+		<h1 slot="title">Delete confirmation</h1>
+		<span slot="confirmation-content"
+			>Do you really want to delete {roleToBeDeleted.name}? You can not reverse this action.
+		</span>
+	</DangerZoneConfirmDeleteActionModal>
 {/if}
-
-<style>
-	.header {
-		margin-top: 5em;
-		margin-bottom: 2em;
-	}
-</style>

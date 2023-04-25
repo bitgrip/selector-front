@@ -1,13 +1,13 @@
 <script lang="ts">
-	import type { Item } from '$lib/types/item';
-	import { ColorStyle } from '$lib/types/styles';
 	import { LocalApiItems } from '$lib/apiClient/items';
 	import type { Event } from '$lib/types/event';
-	import { getActiveEvents, getEventsWithFutureDates } from 'utils/date';
+	import type { Item } from '$lib/types/item';
+	import { ColorStyle } from '$lib/types/styles';
 	import EventDetailCompact from 'components/events/EventDetailCompact.svelte';
 	import Icon from 'components/general/Icon.svelte';
-	import { onMount } from 'svelte';
 	import Link from 'components/general/Link.svelte';
+	import { onMount } from 'svelte';
+	import { getActiveEvents, getEventsWithFutureDates } from 'utils/date';
 
 	export let item: Item;
 	let colorStyle: ColorStyle = ColorStyle.primary;
@@ -39,7 +39,7 @@
 		/>
 	</h2>
 	<div class="flex flex-col w-full lg:flex-row">
-		<div class="grid w-2/4 card bg-base-300 rounded-box place-items-center">
+		<div class="grid lg:w-2/4 w-full card bg-base-300 rounded-box place-items-center">
 			<div class="flex flex-row items-center justify-center">
 				<h4>
 					Running Events ({runningEvents?.length})
@@ -58,7 +58,7 @@
 			</div>
 		</div>
 		<div class="divider lg:divider-horizontal" />
-		<div class="grid  w-2/4 card bg-base-300 rounded-box place-items-center">
+		<div class="grid  lg:w-2/4 w-full card bg-base-300 rounded-box place-items-center">
 			<div class="flex flex-row items-center justify-center">
 				<h4>
 					Planned Events ({futureEvents?.length})
