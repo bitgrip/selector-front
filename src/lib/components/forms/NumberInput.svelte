@@ -4,8 +4,11 @@
 
 	export let inputLabel: string;
 	export let inputLabelHelp: string = '';
+	export let inputIsDisabled: boolean = false;
 	export let inputPlaceholder: string = 'Type here';
-	export let textValue: string;
+	export let numberValue: number;
+	export let minimalValue: number | undefined = undefined;
+	export let maximalValue: number | undefined = undefined;
 
 	export let isRequired = false;
 	export let isMissingValue = false;
@@ -14,7 +17,7 @@
 
 	const checkInput = () => {
 		if (isRequired) {
-			if (textValue) {
+			if (numberValue) {
 				isMissingValue = false;
 			} else {
 				isMissingValue = true;
@@ -36,11 +39,14 @@
 	{/if}
 </label>
 <input
-	bind:value={textValue}
+	bind:value={numberValue}
 	on:input={checkInput}
 	on:change={checkInput}
 	on:blur={checkInput}
-	type="text"
+	min={minimalValue}
+	disabled={inputIsDisabled}
+	max={maximalValue}
+	type="number"
 	id={`${inputLabel}-ID`}
 	placeholder={inputPlaceholder}
 	class={`input input-bordered w-full focus:ring-0 focus:ring-offset-0 

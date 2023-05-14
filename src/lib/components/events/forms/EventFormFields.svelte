@@ -7,6 +7,7 @@
 	import SelectDropdown from 'components/forms/SelectDropdown.svelte';
 	import TextField from 'components/forms/TextField.svelte';
 	import RoleParticipantNumber from 'components/roles/RoleParticipantNumber.svelte';
+	import dayjs from 'dayjs';
 	import { onMount } from 'svelte';
 	import { replaceKeyValueInToArrayIfKeyExistOrAdd } from 'utils/arrayUtils';
 
@@ -24,6 +25,7 @@
 			description: '',
 			isLongerThenOneDay: false,
 			longDescription: '',
+			usualLenght: 0,
 			name: '',
 			groupes: [],
 			roles: []
@@ -34,12 +36,15 @@
 		participants: []
 	};
 
+	console.log(event);
+
 	export let formEvent: Event = {
 		_id: event?._id || '',
 		item: event?.item || {
 			_id: '',
 			description: '',
 			isLongerThenOneDay: false,
+			usualLenght: 0,
 			longDescription: '',
 			name: '',
 			groupes: [],
@@ -56,6 +61,7 @@
 		roles: [],
 		groupes: [],
 		isLongerThenOneDay: false,
+		usualLenght: 0,
 		name: '',
 		description: '',
 		longDescription: ''
@@ -66,6 +72,8 @@
 		role: string;
 		person: string;
 	}> = [];
+
+	let endDateModified: boolean | undefined = undefined;
 
 	// there is some kind of weird bug, when binding directly to formEvent.eventNote there is some weird rerender, calling getNamesForRole...
 	// but this looks to work ok :)
@@ -91,6 +99,31 @@
 
 	$: if (item.isLongerThenOneDay === false) {
 		endDate = startDate;
+	}
+
+	$: if (
+		item.isLongerThenOneDay === true &&
+		item.usualLenght &&
+		item.usualLenght > 0 &&
+		endDateModified !== undefined &&
+		endDateModified === false
+	) {
+		endDate = dayjs(startDate)
+			.add(item.usualLenght - 1, 'day')
+			.toString();
+	}
+
+	// creating new event, automatically fill in end date
+	$: if (
+		item.isLongerThenOneDay === true &&
+		item.usualLenght &&
+		item.usualLenght > 0 &&
+		endDateModified === undefined &&
+		endDate === ''
+	) {
+		endDate = dayjs(startDate)
+			.add(item.usualLenght - 1, 'day')
+			.toString();
 	}
 
 	$: formEvent.startDate = startDate;
@@ -154,17 +187,25 @@
 			bind:date={startDate}
 			on:onUserInteraction={() => {
 				formValidation.startDateMissing = false;
+				endDateModified = false;
+				console.log({ endDateModified });
 			}}
 		/>
 
 		{#if item.isLongerThenOneDay}
 			<DateInput
 				isRequired={true}
-				inputLabel="End date"
+				inputLabel={`${
+					item.usualLenght && item.usualLenght > 0
+						? `End date (predefined length ${item.usualLenght} days)`
+						: 'End date'
+				}`}
 				class={`${formValidation.endDateMissing ? 'input-error' : 'input-primary'}`}
-				bind:date={endDate}
-				on:onUserInteraction={() => {
+				date={endDate}
+				on:onUserInteraction={(event) => {
 					formValidation.endDateMissing = false;
+					endDateModified = true;
+					endDate = event.detail.toString();
 				}}
 			/>
 		{/if}

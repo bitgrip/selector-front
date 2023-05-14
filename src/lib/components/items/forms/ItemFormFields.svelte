@@ -3,9 +3,11 @@
 	import type { Item, ItemRequestType } from '$lib/types/item';
 	import type { Role } from '$lib/types/role';
 	import type { SvelteSelectableItem } from '$lib/types/svelte-select/detail';
+	import NumberInput from 'components/forms/NumberInput.svelte';
 	import SelectDropdown from 'components/forms/SelectDropdown.svelte';
 	import TextField from 'components/forms/TextField.svelte';
 	import TextInput from 'components/forms/TextInput.svelte';
+	import ToggleInput from 'components/forms/ToggleInput.svelte';
 	import RoleBadge from 'components/roles/RoleBadge.svelte';
 	import {
 		addItemToArrayIfNotAlreadyThere,
@@ -24,6 +26,7 @@
 		longDescription: '',
 		roles: [],
 		isLongerThenOneDay: false,
+		usualLenght: null,
 		groupes: []
 	};
 
@@ -49,6 +52,7 @@
 		isLongerThenOneDay: item.isLongerThenOneDay || false,
 		description: item.description || '',
 		longDescription: item.longDescription || '',
+		usualLenght: item.usualLenght || null,
 		name: item.name || '',
 		groupes: [],
 		roles: []
@@ -152,14 +156,24 @@
 					{/each}
 				</div>
 
-				<label class="cursor-pointer label">
-					<span class="label-text">Interval tracking?</span>
-					<input
-						type="checkbox"
-						class="toggle toggle-primary"
-						bind:checked={formItem.isLongerThenOneDay}
-					/>
-				</label>
+				<ToggleInput
+					inputLabel={'Interval tracking?'}
+					class="toggle-primary"
+					bind:value={formItem.isLongerThenOneDay}
+					inputLabelHelp={'Turn on if the tracked item duration is longer then one day. '}
+				/>
+
+				<NumberInput
+					minimalValue={2}
+					isRequired={false}
+					inputIsDisabled={!formItem.isLongerThenOneDay}
+					inputLabel={'Predefined length in days'}
+					class={`input-primary w-full`}
+					inputPlaceholder="Predefined item duration"
+					inputLabelHelp={"Leave empty if don't want to define any. This will help \
+					you when creating new events with interval tracking as you will only have to select the starting date."}
+					bind:numberValue={formItem.usualLenght}
+				/>
 			</div>
 		</div>
 

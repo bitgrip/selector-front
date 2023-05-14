@@ -14,6 +14,12 @@ export function formatDate(dateString: string) {
 	return [year, month, day].join('-');
 }
 
+export function formatDateForHuman(dateString: string) {
+	const date = new Date(dateString);
+
+	return dayjs(date).format('DD.MM.YYYY');
+}
+
 export const getEventsWithFutureDates = (events: Event[]) => {
 	const results: Event[] = [];
 	const today = new Date();
@@ -98,4 +104,3 @@ export const compareDates = <T>(a: T, b: T) => {
 		return 0;
 	}
 };
-

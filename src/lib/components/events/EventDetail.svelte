@@ -11,7 +11,7 @@
 	import dayjs from 'dayjs';
 	import relativeTime from 'dayjs/plugin/relativeTime';
 	import { createEventDispatcher } from 'svelte';
-	import { formatDate, getRemainingTime } from 'utils/date';
+	import { formatDate, formatDateForHuman, getRemainingTime } from 'utils/date';
 
 	const dispatch = createEventDispatcher<{ delete: Event; edit: Event }>();
 
@@ -21,6 +21,7 @@
 			_id: '',
 			description: '',
 			isLongerThenOneDay: false,
+			usualLenght: 0,
 			longDescription: '',
 			name: '',
 			groupes: [],
@@ -95,9 +96,16 @@
 			<Counter days={timeToStart.days} hours={timeToStart.hours} textSize={'text-4xl'} />
 		{/if}
 		<br />
-		{event.endDate && event.endDate
-			? `from ${formatDate(event.startDate)} to ${formatDate(event.endDate)}`
-			: `on ${formatDate(event.startDate)}`}
+		{#if !event.endDate}
+			<span> {`on ${formatDateForHuman(event.startDate)}`} </span>
+		{:else}
+			<div class="flex flex-row justify-between max-w-xs">
+				<span>from</span><span>{formatDateForHuman(event.startDate)}</span>
+			</div>
+			<div class="flex flex-row justify-between max-w-xs">
+				<span>to</span><span>{formatDateForHuman(event.endDate)}</span>
+			</div>
+		{/if}
 		<br />
 
 		{#each event.participants as participant}
@@ -105,7 +113,8 @@
 				<RoleBadge
 					type={highlightPersonId === participant.person._id ? TypeStyle.primary : TypeStyle.ghost}
 					role={participant.role}
-				/> <PersonLink
+				/>
+				<PersonLink
 					person={participant.person}
 					type={highlightPersonId === participant.person._id
 						? ColorStyle.primary

@@ -7,7 +7,7 @@
 	export let isRequired = false;
 	export let inputLabel: string;
 
-	const dispatch = createEventDispatcher<{ onUserInteraction: void }>();
+	const dispatch = createEventDispatcher<{ onUserInteraction: Date }>();
 
 	let isMissingValue = false;
 	let internal: string;
@@ -28,7 +28,7 @@
 				isMissingValue = true;
 			}
 
-			dispatch('onUserInteraction');
+			dispatch('onUserInteraction', output(internal));
 		}
 	};
 </script>

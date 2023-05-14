@@ -55,6 +55,10 @@
 			...selectedItems
 		});
 	};
+
+	let floatingConfig = {
+		strategy: 'fixed'
+	};
 </script>
 
 <div class="themed-select-{colorStyle} {classesFromTheParent}">
@@ -62,6 +66,7 @@
 	rendered, it can not be changed -->
 	{#if visible}
 		<Select
+			{floatingConfig}
 			id="dropdown"
 			{items}
 			multiple={multiSelect}
