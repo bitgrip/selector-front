@@ -2,7 +2,7 @@
 	import Grid from 'gridjs-svelte';
 	import { html } from 'gridjs';
 	import 'gridjs/dist/theme/mermaid.css';
-	import { camelize } from 'utils/stringUtils';
+	import { camelize, capitalize, lowerCase } from 'utils/stringUtils';
 	import type { Attendance } from '$lib/types/attendance';
 	import type { Item } from '$lib/types/item';
 	import { findKeyPositionInArray } from 'utils/arrayUtils';
@@ -27,6 +27,8 @@
 		[prop: string]: any;
 	}>;
 
+	let activeSorting = '';
+
 	// TODO Solve the problem with sorting function when columns is Array<TColumn>
 	// let columns: Array<TColumn>;
 	let columns: any;
@@ -48,6 +50,7 @@
 					name: i,
 					sort: {
 						compare: (a: Date, b: Date): number => {
+							activeSorting = '';
 							return compareDates<Date>(a, b);
 						}
 					}
@@ -57,7 +60,15 @@
 			return {
 				id: camelize(i),
 				name: i,
-				width: '15%'
+				width: '15%',
+				sort: {
+					compare: (a: string, b: string): number => {
+						activeSorting = '';
+						if (a < b) return -1;
+						if (a > b) return 1;
+						return 0;
+					}
+				}
 			};
 		});
 
@@ -66,6 +77,14 @@
 				id: 'name',
 				name: 'name',
 				width: '15%',
+				sort: {
+					compare: (a: string, b: string): number => {
+						activeSorting = '';
+						if (a < b) return -1;
+						if (a > b) return 1;
+						return 0;
+					}
+				},
 				formatter: (cell: any, row: any) =>
 					html(`<span class="${row.cells[1].data === 'no' && 'text-error'} ">${cell} </span>`)
 			},
@@ -125,13 +144,31 @@
 			grid.updateConfig({ data: mappedTableData, columns: columns }).forceRender();
 		}
 	}
+
+	const sortData = (roleName: string) => {
+		console.log(roleName);
+		console.log(mappedTableData);
+		const sortedMappeData = mappedTableData.sort((a, b) => {
+			if (a[`${lowerCase(roleName)}`] === b[`${lowerCase(roleName)}`]) {
+				return a[`lastTimeIn${capitalize(roleName)}`] < b[`lastTimeIn${capitalize(roleName)}`]
+					? -1
+					: 1;
+			} else {
+				return a[`${lowerCase(roleName)}`] < b[`${lowerCase(roleName)}`] ? -1 : 1;
+			}
+		});
+		console.log(sortedMappeData);
+		grid.updateConfig({ data: sortedMappeData, columns: columns }).forceRender();
+	};
 </script>
 
-<label class="cursor-pointer label w-40">
-	<span class="label-text">show inactive people in the table</span>
+<div class="flex flex-row items-center">
+	<label for="people-table-inactive-people"><h5>Show inactive people in the table</h5></label>
+
 	<input
+		id="people-table-inactive-people"
 		type="checkbox"
-		class="toggle toggle-primary"
+		class="ml-4 toggle toggle-accent toggle toggle-sm"
 		bind:checked={showInactivePeople}
 		on:change={() => {
 			mappedTableData = mapData(data);
@@ -139,8 +176,34 @@
 			grid.updateConfig({ data: mappedTableData, columns: columns }).forceRender();
 		}}
 	/>
-</label>
-<Grid bind:instance={grid} data={mappedTableData} {columns} sort={true} {className} />
+</div>
+
+<h5>Sort to find the best:</h5>
+<div class="mb-4">
+	{#each item.roles as role}
+		<button
+			id={role.name}
+			class={`mr-2 mt-2 btn btn-accent btn-sm ${
+				activeSorting === role.name ? 'btn-accent' : 'btn-outline'
+			}`}
+			on:click={() => {
+				activeSorting = role.name;
+				sortData(role.name);
+			}}>{role.name}</button
+		>
+	{/each}
+</div>
+
+<Grid
+	on:click={() => {
+		activeSorting = '';
+	}}
+	bind:instance={grid}
+	data={mappedTableData}
+	{columns}
+	sort={true}
+	{className}
+/>
 
 <style global>
 	/* @import 'https://cdn.jsdelivr.net/npm/gridjs/dist/theme/mermaid.min.css'; */

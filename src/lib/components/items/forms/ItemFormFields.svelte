@@ -27,7 +27,8 @@
 		roles: [],
 		isLongerThenOneDay: false,
 		usualLenght: null,
-		groupes: []
+		groupes: [],
+		hasAutomaticStartDate: false
 	};
 
 	export let allGroupes: Array<Group> = [];
@@ -54,11 +55,10 @@
 		longDescription: item.longDescription || '',
 		usualLenght: item.usualLenght || null,
 		name: item.name || '',
+		hasAutomaticStartDate: item.hasAutomaticStartDate || false,
 		groupes: [],
 		roles: []
 	};
-
-	console.log(formItem);
 
 	if (allRoles.length > 0) {
 		rolesForSelect = allRoles.map((role) => {
@@ -120,19 +120,19 @@
 				inputPlaceholder="long description"
 				bind:textValue={formItem.longDescription}
 			/>
+
+			<TextField
+				inputLabel={'Short description'}
+				inputLabelHelp={'shown on the overview page'}
+				class="textarea-primary leading-tight"
+				inputPlaceholder="short description"
+				bind:textValue={formItem.description}
+			/>
 		</div>
 		<div class="divider lg:divider-horizontal" />
 
 		<div class="lg:w-80 w-full p-4 grid flex-grow card bg-base-300 rounded-box">
 			<div>
-				<TextField
-					inputLabel={'Short description'}
-					inputLabelHelp={'shown on the overview page'}
-					class="textarea-primary leading-tight"
-					inputPlaceholder="short description"
-					bind:textValue={formItem.description}
-				/>
-
 				<div class="item">
 					<span class="label-text">Roles</span>
 					<SelectDropdown
@@ -173,6 +173,13 @@
 					inputLabelHelp={"Leave empty if don't want to define any. This will help \
 					you when creating new events with interval tracking as you will only have to select the starting date."}
 					bind:numberValue={formItem.usualLenght}
+				/>
+
+				<ToggleInput
+					inputLabel={'Prefill start dates?'}
+					class="toggle-primary"
+					bind:value={formItem.hasAutomaticStartDate}
+					inputLabelHelp={'Prefill start dates based on end date of the last event or start day for events without interval tracking.'}
 				/>
 			</div>
 		</div>

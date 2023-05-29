@@ -1,3 +1,50 @@
+export const mockedItem = {
+	_id: '636b4b8d01f350e3c2177972',
+	name: 'Telling Secrets',
+	roles: [
+		{
+			_id: '636b4baa01f350e3c2177978',
+			name: 'Moderator',
+			description: 'Should talk when everyone else is quiet. ',
+			icon: 'faMicrophone',
+			itemsUsingRole: []
+		},
+		{
+			_id: '636b4bfb01f350e3c217797c',
+			name: 'Recorder',
+			description: 'Also known as Protokollant, writes everything said down. ',
+			icon: 'faUserEdit',
+			itemsUsingRole: []
+		}
+	],
+	description: 'Every Friday the deepest secrets are revealed. ',
+	isLongerThenOneDay: false,
+	groupes: [
+		{ _id: '6371224a40d8a5954f19b1aa', name: 'Bitgrip', description: 'all the bitgrip people' }
+	]
+};
+
+export const mockedItemNoPredefinedLenghtNoAutoStartDate = {
+	...mockedItem,
+	isLongerThenOneDay: true,
+	hasAutomaticStartDate: false,
+	usualLenght: null
+};
+
+export const mockedItemPredefinedLenghtNoAutoStartDate = {
+	...mockedItem,
+	isLongerThenOneDay: true,
+	hasAutomaticStartDate: false,
+	usualLenght: 5
+};
+
+export const mockedItemPredefinedLenghtAutoStartDate = {
+	...mockedItem,
+	isLongerThenOneDay: true,
+	hasAutomaticStartDate: true,
+	usualLenght: 5
+};
+
 export const mockedItems = [
 	{
 		_id: '636b4b8d01f350e3c2177972',

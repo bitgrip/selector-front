@@ -51,7 +51,7 @@
 	export let allGroupes: Array<Group> = [];
 </script>
 
-<Modal class={classesFromTheParent} on:clickOutside={() => close()}>
+<Modal class={classesFromTheParent}>
 	<slot name="title" slot="modal-title" />
 
 	<svelte:fragment slot="modal-content">

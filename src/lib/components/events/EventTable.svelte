@@ -70,14 +70,14 @@
 		return events.map((event) => {
 			roleWithNamesForTableData = {};
 			event.participants.forEach((participant) => {
-				if (roleWithNamesForTableData[camelize(participant.role.name)]) {
-					roleWithNamesForTableData[camelize(participant.role.name)] = `${
-						roleWithNamesForTableData[camelize(participant.role.name)]
-					}, ${participant.person.name} `;
+				if (roleWithNamesForTableData[camelize(participant?.role?.name)]) {
+					roleWithNamesForTableData[camelize(participant?.role?.name)] = `${
+						roleWithNamesForTableData[camelize(participant?.role?.name)]
+					}, ${participant?.person?.name} `;
 				} else {
 					roleWithNamesForTableData = {
 						...roleWithNamesForTableData,
-						[camelize(participant.role.name)]: participant.person.name
+						[camelize(participant?.role?.name)]: participant?.person?.name
 					};
 				}
 			});

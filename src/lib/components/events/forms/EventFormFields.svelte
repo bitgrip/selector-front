@@ -18,6 +18,7 @@
 
 	export let peopleToSelectFrom: Array<SvelteSelectableItem> = [];
 
+	export let lastItemEvent: Event | undefined = undefined;
 	export let event: Event = {
 		_id: '',
 		item: {
@@ -25,6 +26,7 @@
 			description: '',
 			isLongerThenOneDay: false,
 			longDescription: '',
+			hasAutomaticStartDate: false,
 			usualLenght: 0,
 			name: '',
 			groupes: [],
@@ -36,8 +38,6 @@
 		participants: []
 	};
 
-	console.log(event);
-
 	export let formEvent: Event = {
 		_id: event?._id || '',
 		item: event?.item || {
@@ -46,6 +46,7 @@
 			isLongerThenOneDay: false,
 			usualLenght: 0,
 			longDescription: '',
+			hasAutomaticStartDate: false,
 			name: '',
 			groupes: [],
 			roles: []
@@ -61,18 +62,19 @@
 		roles: [],
 		groupes: [],
 		isLongerThenOneDay: false,
+		hasAutomaticStartDate: false,
 		usualLenght: 0,
 		name: '',
 		description: '',
 		longDescription: ''
 	};
 
-	console.log(peopleToSelectFrom);
 	let selectedParticipantsIds: Array<{
 		role: string;
 		person: string;
 	}> = [];
 
+	let startDateModified: boolean | undefined = false;
 	let endDateModified: boolean | undefined = undefined;
 
 	// there is some kind of weird bug, when binding directly to formEvent.eventNote there is some weird rerender, calling getNamesForRole...
@@ -82,19 +84,16 @@
 	// end of weird bug
 
 	onMount(async () => {
-		console.log('rerender');
-		console.log(event);
 		event.participants.forEach((participant) => {
 			selectedParticipantsIds.push({
 				role: participant.role._id,
 				person: participant.person._id
 			});
 		});
-		console.log(selectedParticipantsIds);
 		auxEventNote = event.eventNote || '';
 	});
 
-	let startDate = event.startDate || new Date().toDateString();
+	let startDate = '';
 	let endDate: EventRequestType['endDate'] = event.endDate ? event.endDate : '';
 
 	$: if (item.isLongerThenOneDay === false) {
@@ -108,22 +107,34 @@
 		endDateModified !== undefined &&
 		endDateModified === false
 	) {
+		if (startDateModified === false) {
+			startDate = event.startDate || new Date().toDateString();
+		}
 		endDate = dayjs(startDate)
 			.add(item.usualLenght - 1, 'day')
 			.toString();
 	}
 
 	// creating new event, automatically fill in end date
-	$: if (
-		item.isLongerThenOneDay === true &&
-		item.usualLenght &&
-		item.usualLenght > 0 &&
-		endDateModified === undefined &&
-		endDate === ''
-	) {
-		endDate = dayjs(startDate)
-			.add(item.usualLenght - 1, 'day')
-			.toString();
+	$: if (item.isLongerThenOneDay === true && endDateModified === undefined && endDate === '') {
+		// adding a new event with item with usual length > 0
+		if (item.hasAutomaticStartDate === true && lastItemEvent?.endDate) {
+			startDate = dayjs(lastItemEvent?.endDate).add(1, 'day').toString();
+			startDateModified = true;
+		} else {
+			startDate = event.startDate || new Date().toDateString();
+		}
+
+		if (item.usualLenght && item.usualLenght > 0) {
+			endDate = dayjs(startDate)
+				.add(item.usualLenght - 1, 'day')
+				.toString();
+		}
+	} else {
+		// editing an event with existing date and item with usual length > 0
+		if (startDateModified === false) {
+			startDate = event.startDate || new Date().toDateString();
+		}
 	}
 
 	$: formEvent.startDate = startDate;
@@ -131,18 +142,14 @@
 	$: formEvent.participants = selectedParticipantsIds;
 
 	const getNamesForRole = (role: Role): string | string[] => {
-		console.log('why is this called');
-		console.log(role);
 		let person = '';
 		let personNameArray: string[] = [];
 		if (role.canHaveMultipleParticipants) {
-			console.log(event.participants);
 			event.participants.forEach((participant) => {
 				if (participant.role._id == role._id) {
 					personNameArray.push(participant.person._id);
 				}
 			});
-			console.log(personNameArray);
 			return personNameArray;
 		} else {
 			event.participants.forEach((participant) => {
@@ -166,7 +173,6 @@
 				person: event.detail[0].value
 			});
 		} else {
-			console.log(selectedParticipantsIds);
 			selectedParticipantsIds = selectedParticipantsIds.filter((item) => item.role !== roleId);
 			for (const [_key, participantItem] of Object.entries(event.detail)) {
 				selectedParticipantsIds.push({
@@ -184,11 +190,12 @@
 			isRequired={true}
 			inputLabel="Start date"
 			class={`${formValidation.startDateMissing ? 'input-error' : 'input-primary'}`}
-			bind:date={startDate}
-			on:onUserInteraction={() => {
+			date={startDate}
+			on:onUserInteraction={(event) => {
 				formValidation.startDateMissing = false;
 				endDateModified = false;
-				console.log({ endDateModified });
+				startDateModified = true;
+				startDate = event.detail.toString();
 			}}
 		/>
 
@@ -203,9 +210,13 @@
 				class={`${formValidation.endDateMissing ? 'input-error' : 'input-primary'}`}
 				date={endDate}
 				on:onUserInteraction={(event) => {
-					formValidation.endDateMissing = false;
+					if (event.detail.toString() !== 'Invalid Date') {
+						formValidation.endDateMissing = false;
+						endDate = event.detail.toString();
+					} else {
+						formValidation.endDateMissing = true;
+					}
 					endDateModified = true;
-					endDate = event.detail.toString();
 				}}
 			/>
 		{/if}

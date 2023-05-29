@@ -9,6 +9,7 @@ export interface Item extends dbInfo {
 	longDescription: string;
 	isLongerThenOneDay: boolean;
 	usualLenght: number | null;
+	hasAutomaticStartDate: boolean;
 	// item can only be in one group, it is still an array because of legacy i guess
 	groupes: Array<Group>;
 }

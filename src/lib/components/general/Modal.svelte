@@ -1,13 +1,4 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
-	import { clickOutsideToClose } from './helper/clickOutsideToClose';
-
-	const dispatch = createEventDispatcher<{ clickOutside: void }>();
-
-	function clickOutside() {
-		dispatch('clickOutside');
-	}
-
 	$: classesFromTheParent = $$props.class;
 </script>
 
@@ -19,8 +10,6 @@
 	aria-hidden="true"
 >
 	<div
-		use:clickOutsideToClose
-		on:outclick={() => clickOutside()}
 		class="sm:h-[calc(100%-3rem)] my-6 mx-auto relative w-auto pointer-events-none  {classesFromTheParent} "
 	>
 		<div

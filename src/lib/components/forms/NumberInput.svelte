@@ -6,7 +6,7 @@
 	export let inputLabelHelp: string = '';
 	export let inputIsDisabled: boolean = false;
 	export let inputPlaceholder: string = 'Type here';
-	export let numberValue: number;
+	export let numberValue: number | null;
 	export let minimalValue: number | undefined = undefined;
 	export let maximalValue: number | undefined = undefined;
 

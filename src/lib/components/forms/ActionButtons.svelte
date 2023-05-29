@@ -5,8 +5,6 @@
 
 	export let saveButtonDisabled = false;
 
-	console.log({ saveButtonDisabled });
-
 	function close() {
 		dispatch('close');
 	}
@@ -20,6 +18,7 @@
 	<button
 		class="btn btn-outline btn-error"
 		type="button"
+		aria-label="Close"
 		on:click={() => {
 			close();
 		}}>Close</button
@@ -28,6 +27,7 @@
 		type="button"
 		class="btn btn-outline btn-info"
 		disabled={saveButtonDisabled}
+		aria-label="Save"
 		on:click={() => {
 			save();
 		}}>Save</button

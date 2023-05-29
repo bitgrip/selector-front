@@ -14,6 +14,8 @@
 
 	export let peopleToSelectFrom: Array<SvelteSelectableItem> = [];
 
+	export let lastItemEvent: Event | undefined = undefined;
+
 	export let event: Event = {
 		_id: '',
 		item: {
@@ -21,6 +23,8 @@
 			description: '',
 			isLongerThenOneDay: false,
 			longDescription: '',
+			hasAutomaticStartDate: false,
+			usualLenght: null,
 			name: '',
 			groupes: [],
 			roles: []
@@ -31,13 +35,27 @@
 		participants: []
 	};
 
+	export let item: Item = {
+		_id: '',
+		roles: [],
+		groupes: [],
+		isLongerThenOneDay: false,
+		usualLenght: null,
+		hasAutomaticStartDate: false,
+		name: '',
+		description: '',
+		longDescription: ''
+	};
+
 	export let formEventSubmitted: Event = {
 		_id: event?._id || '',
-		item: event?.item || {
+		item: item || {
 			_id: '',
 			description: '',
 			isLongerThenOneDay: false,
 			longDescription: '',
+			usualLenght: null,
+			hasAutomaticStartDate: false,
 			name: '',
 			groupes: [],
 			roles: []
@@ -46,16 +64,6 @@
 		endDate: event?.endDate || '',
 		eventNote: event?.eventNote || '',
 		participants: event?.participants || []
-	};
-
-	export let item: Item = {
-		_id: '',
-		roles: [],
-		groupes: [],
-		isLongerThenOneDay: false,
-		name: '',
-		description: '',
-		longDescription: ''
 	};
 
 	let formValidation = {
@@ -129,14 +137,13 @@
 		} else {
 			formEventSubmitted.endDate = '';
 		}
-
 		dispatch('submit', {
 			...formEventSubmitted
 		});
 	}
 </script>
 
-<Modal class={classesFromTheParent} on:clickOutside={() => close()}>
+<Modal class={classesFromTheParent}>
 	<slot name="title" slot="modal-title" />
 
 	<svelte:fragment slot="modal-content">
@@ -146,6 +153,7 @@
 			{item}
 			{event}
 			{formValidation}
+			{lastItemEvent}
 		/>
 	</svelte:fragment>
 

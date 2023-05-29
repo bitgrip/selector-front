@@ -23,6 +23,7 @@
 		longDescription: '',
 		roles: [],
 		isLongerThenOneDay: false,
+		hasAutomaticStartDate: false,
 		usualLenght: null,
 		groupes: []
 	};
@@ -33,6 +34,7 @@
 		usualLenght: item?.usualLenght || null,
 		description: item?.description || '',
 		longDescription: item?.longDescription || '',
+		hasAutomaticStartDate: item?.hasAutomaticStartDate || false,
 		name: item?.name || '',
 		groupes: [],
 		roles: []
@@ -59,7 +61,7 @@
 	export let allRoles: Array<Role> = [];
 </script>
 
-<Modal class={classesFromTheParent} on:clickOutside={() => close()}>
+<Modal class={classesFromTheParent}>
 	<slot name="title" slot="modal-title" />
 
 	<svelte:fragment slot="modal-content">

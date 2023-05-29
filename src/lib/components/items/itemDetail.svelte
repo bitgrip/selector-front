@@ -55,7 +55,6 @@
 
 	const fetchAllItemEvents = async () => {
 		itemEvents = await LocalApiItems.getItemEvents(item._id, 'all', '10');
-		console.log(itemEvents);
 	};
 
 	let peopleAttendance: Attendance = {};
@@ -113,6 +112,7 @@
 		<EventFormModal
 			class="lg:w-4/12 w-full"
 			peopleToSelectFrom={selectablePeople}
+			lastItemEvent={itemEvents?.[0] || null}
 			{item}
 			on:submit={(event) => {
 				handleCreateNewEvent(event.detail, item).then(() => {
@@ -165,7 +165,7 @@
 					fetchPeopleAttendance();
 					isLoading = false;
 				});
-			
+
 				showDeleteEventModal = false;
 			}}
 		>
