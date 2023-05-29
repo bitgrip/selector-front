@@ -145,9 +145,16 @@
 		}
 	}
 
+	const camelizeString = (str: string) => {
+		return str
+			.replace(/(?:^\w|[A-Z]|\b\w)/g, function (word, index) {
+				return index === 0 ? word.toLowerCase() : word.toUpperCase();
+			})
+			.replace(/\s+/g, '');
+	};
+
 	const sortData = (roleName: string) => {
-		console.log(roleName);
-		console.log(mappedTableData);
+		roleName = camelizeString(roleName);
 		const sortedMappeData = mappedTableData.sort((a, b) => {
 			if (a[`${lowerCase(roleName)}`] === b[`${lowerCase(roleName)}`]) {
 				return a[`lastTimeIn${capitalize(roleName)}`] < b[`lastTimeIn${capitalize(roleName)}`]
@@ -157,7 +164,6 @@
 				return a[`${lowerCase(roleName)}`] < b[`${lowerCase(roleName)}`] ? -1 : 1;
 			}
 		});
-		console.log(sortedMappeData);
 		grid.updateConfig({ data: sortedMappeData, columns: columns }).forceRender();
 	};
 </script>
