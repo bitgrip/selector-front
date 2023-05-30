@@ -2,7 +2,7 @@
 	import Grid from 'gridjs-svelte';
 	import { html } from 'gridjs';
 	import 'gridjs/dist/theme/mermaid.css';
-	import { camelize, capitalize, lowerCase } from 'utils/stringUtils';
+	import { camelize, capitalize, firstLetterToLowerCase, lowerCase } from 'utils/stringUtils';
 	import type { Attendance } from '$lib/types/attendance';
 	import type { Item } from '$lib/types/item';
 	import { findKeyPositionInArray } from 'utils/arrayUtils';
@@ -156,12 +156,14 @@
 	const sortData = (roleName: string) => {
 		roleName = camelizeString(roleName);
 		const sortedMappeData = mappedTableData.sort((a, b) => {
-			if (a[`${lowerCase(roleName)}`] === b[`${lowerCase(roleName)}`]) {
+			if (a[`${firstLetterToLowerCase(roleName)}`] === b[`${firstLetterToLowerCase(roleName)}`]) {
 				return a[`lastTimeIn${capitalize(roleName)}`] < b[`lastTimeIn${capitalize(roleName)}`]
 					? -1
 					: 1;
 			} else {
-				return a[`${lowerCase(roleName)}`] < b[`${lowerCase(roleName)}`] ? -1 : 1;
+				return a[`${firstLetterToLowerCase(roleName)}`] < b[`${firstLetterToLowerCase(roleName)}`]
+					? -1
+					: 1;
 			}
 		});
 		grid.updateConfig({ data: sortedMappeData, columns: columns }).forceRender();

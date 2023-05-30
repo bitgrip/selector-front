@@ -14,3 +14,8 @@ export const capitalize = (str: string) => {
 export const lowerCase = (str: string) => {
 	return str.toLowerCase();
 };
+
+// firstLetterToLowerCase
+export const firstLetterToLowerCase = (str: string) => {
+	return str.charAt(0).toLowerCase() + str.slice(1);
+};
